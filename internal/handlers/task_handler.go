@@ -38,7 +38,8 @@ func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 	// Populate subtasks for filtered results
 	if filter != "" && filter != "all" {
 		for i := range taskList {
-			taskList[i].Subtasks, _ = h.tasks.ListSubtasks(taskList[i].ID)
+			subtasks, _ := h.tasks.GetSubtasks(taskList[i].ID)
+			taskList[i].Subtasks = subtasks
 		}
 	}
 
@@ -314,10 +315,6 @@ func renderTaskList(w http.ResponseWriter, r *http.Request, tasks []models.Task)
 		components.TaskCard(t).Render(r.Context(), w)
 	}
 	w.Write([]byte(`</div>`))
-}
-
-func (h *TaskHandler) ListSubtasks(taskID string) ([]models.Subtask, error) {
-	return h.tasks.GetSubtasks(taskID)
 }
 
 func extractID(path, prefix string) string {

@@ -13,7 +13,7 @@ import (
 	"activity-monitor/internal/services"
 )
 
-//go:embed ../static
+//go:embed static
 var staticFiles embed.FS
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Static files - embedded from ../static
+	// Static files - embedded from ./static
 	staticFS, _ := fs.Sub(staticFiles, "static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
 
@@ -71,46 +71,26 @@ func main() {
 		path := r.URL.Path
 
 		switch {
-		// GET /tasks/{id}/edit
 		case strings.HasSuffix(path, "/edit") && r.Method == http.MethodGet:
 			taskH.EditForm(w, r)
-
-		// PUT /tasks/{id}/status
 		case strings.HasSuffix(path, "/status") && r.Method == http.MethodPut:
 			taskH.UpdateStatus(w, r)
-
-		// POST /tasks/{id}/subtasks
 		case strings.HasSuffix(path, "/subtasks") && r.Method == http.MethodPost:
 			taskH.AddSubtask(w, r)
-
-		// PUT /tasks/{taskID}/subtasks/{id}/toggle
 		case strings.Contains(path, "/subtasks/") && strings.HasSuffix(path, "/toggle") && r.Method == http.MethodPut:
 			taskH.ToggleSubtask(w, r)
-
-		// DELETE /tasks/{taskID}/subtasks/{id}
 		case strings.Contains(path, "/subtasks/") && r.Method == http.MethodDelete:
 			taskH.DeleteSubtask(w, r)
-
-		// GET /tasks/{id}/reminder/new
 		case strings.HasSuffix(path, "/reminder/new") && r.Method == http.MethodGet:
 			taskH.ReminderForm(w, r)
-
-		// POST /tasks/{id}/reminders
 		case strings.HasSuffix(path, "/reminders") && r.Method == http.MethodPost:
 			taskH.CreateReminder(w, r)
-
-		// PUT /tasks/{id}
 		case r.Method == http.MethodPut:
 			taskH.Update(w, r)
-
-		// DELETE /tasks/{id}
 		case r.Method == http.MethodDelete:
 			taskH.Delete(w, r)
-
-		// GET /tasks/{id}
 		case r.Method == http.MethodGet:
 			taskH.Detail(w, r)
-
 		default:
 			http.NotFound(w, r)
 		}
