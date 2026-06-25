@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"activity-monitor/internal/database"
@@ -18,7 +19,12 @@ var staticFiles embed.FS
 
 func main() {
 	// Init database
-	db, err := database.Open("activity-monitor.db")
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "activity-monitor.db"
+	}
+
+	db, err := database.Open(dbPath)
 	if err != nil {
 		log.Fatalf("open db: %v", err)
 	}
