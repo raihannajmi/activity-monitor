@@ -1,0 +1,52 @@
+# Binaries
+/bin/
+activity-monitor
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Database SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Generated Templ files
+*_templ.go
+*_templ.txt
+
+# Node modules & frontend generated (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Go workspaces
+go.work
+go.work.sum
+
+# OS Specific
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.agents
