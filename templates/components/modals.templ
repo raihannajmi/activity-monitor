@@ -23,7 +23,7 @@ templ TaskFormModal(task *models.Task, allTasks []models.Task) {
 				}
 				hx-target="#task-list"
 				hx-swap="outerHTML"
-				hx-on::after-request="document.getElementById('modal-container').innerHTML=''"
+				hx-on::after-request="if(event.detail.successful) document.getElementById('modal-container').innerHTML=''"
 				class="modal-form"
 				id="task-form"
 			>
@@ -126,7 +126,7 @@ templ NoteFormModal(note *models.Note) {
 				}
 				hx-target="#notes-list"
 				hx-swap="outerHTML"
-				hx-on::after-request="document.getElementById('modal-container').innerHTML=''"
+				hx-on::after-request="if(event.detail.successful) document.getElementById('modal-container').innerHTML=''"
 				class="modal-form"
 				id="note-form"
 			>
@@ -188,7 +188,7 @@ templ ReminderFormModal(taskID, taskTitle string) {
 				hx-post={ "/tasks/" + taskID + "/reminders" }
 				hx-target="#modal-container"
 				hx-swap="innerHTML"
-				hx-on::after-request="document.getElementById('modal-container').innerHTML=''"
+				hx-on::after-request="if(event.detail.successful) document.getElementById('modal-container').innerHTML=''"
 				class="modal-form"
 				id="reminder-form"
 			>

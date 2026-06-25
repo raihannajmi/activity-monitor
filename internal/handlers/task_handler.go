@@ -31,7 +31,7 @@ func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 		taskList, err = h.tasks.ListWithSubtasks()
 	}
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal mengambil data task", http.StatusInternalServerError)
 		return
 	}
 
@@ -78,13 +78,13 @@ func (h *TaskHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 
 func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.sendError(w, r, "Data tidak valid", http.StatusBadRequest)
 		return
 	}
 
 	title := strings.TrimSpace(r.FormValue("title"))
 	if title == "" {
-		http.Error(w, "judul tidak boleh kosong", http.StatusBadRequest)
+		h.sendError(w, r, "Judul task tidak boleh kosong", http.StatusBadRequest)
 		return
 	}
 
@@ -101,7 +101,7 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := h.tasks.Create(title, r.FormValue("description"), priority, deadline); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal membuat task", http.StatusInternalServerError)
 		return
 	}
 
@@ -114,7 +114,7 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id := extractID(r.URL.Path, "/tasks/")
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.sendError(w, r, "Data form tidak valid", http.StatusBadRequest)
 		return
 	}
 
@@ -137,7 +137,13 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 	task.Deadline = deadline
 
 	if err := h.tasks.Update(task); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal menyimpan task", http.StatusInternalServerError)
+		return
+	}
+
+	// Context-aware update: if edited from Detail Page, refresh to see changes properly
+	if strings.Contains(r.Header.Get("HX-Current-URL"), "/tasks/"+id) {
+		w.Header().Set("HX-Refresh", "true")
 		return
 	}
 
@@ -151,19 +157,19 @@ func (h *TaskHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/tasks/")
 	parts := strings.Split(path, "/")
 	if len(parts) < 2 {
-		http.Error(w, "invalid path", http.StatusBadRequest)
+		h.sendError(w, r, "Path tidak valid", http.StatusBadRequest)
 		return
 	}
 	id := parts[0]
 
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.sendError(w, r, "Data tidak valid", http.StatusBadRequest)
 		return
 	}
 
 	status := models.Status(r.FormValue("status"))
 	if err := h.tasks.UpdateStatus(id, status); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal mengubah status task", http.StatusInternalServerError)
 		return
 	}
 
@@ -180,7 +186,13 @@ func (h *TaskHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := extractID(r.URL.Path, "/tasks/")
 	if err := h.tasks.Delete(id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal menghapus task", http.StatusInternalServerError)
+		return
+	}
+	
+	// If deleted from Detail Page, redirect back to task list
+	if strings.Contains(r.Header.Get("HX-Current-URL"), "/tasks/"+id) {
+		w.Header().Set("HX-Redirect", "/tasks")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -193,18 +205,18 @@ func (h *TaskHandler) AddSubtask(w http.ResponseWriter, r *http.Request) {
 	taskID := parts[0]
 
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.sendError(w, r, "Data tidak valid", http.StatusBadRequest)
 		return
 	}
 
 	title := strings.TrimSpace(r.FormValue("title"))
 	if title == "" {
-		http.Error(w, "judul subtask tidak boleh kosong", http.StatusBadRequest)
+		h.sendError(w, r, "Judul subtask tidak boleh kosong", http.StatusBadRequest)
 		return
 	}
 
 	if _, err := h.tasks.AddSubtask(taskID, title); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal menambahkan subtask", http.StatusInternalServerError)
 		return
 	}
 
@@ -223,14 +235,14 @@ func (h *TaskHandler) ToggleSubtask(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/tasks/")
 	parts := strings.Split(path, "/")
 	if len(parts) < 4 {
-		http.Error(w, "invalid path", http.StatusBadRequest)
+		h.sendError(w, r, "Path tidak valid", http.StatusBadRequest)
 		return
 	}
 	taskID := parts[0]
 	subtaskID := parts[2]
 
 	if err := h.tasks.ToggleSubtask(subtaskID, taskID); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal mengubah status subtask", http.StatusInternalServerError)
 		return
 	}
 
@@ -249,13 +261,13 @@ func (h *TaskHandler) DeleteSubtask(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/tasks/")
 	parts := strings.Split(path, "/")
 	if len(parts) < 3 {
-		http.Error(w, "invalid path", http.StatusBadRequest)
+		h.sendError(w, r, "Path tidak valid", http.StatusBadRequest)
 		return
 	}
 	subtaskID := parts[2]
 
 	if err := h.tasks.DeleteSubtask(subtaskID); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal menghapus subtask", http.StatusInternalServerError)
 		return
 	}
 
@@ -285,7 +297,7 @@ func (h *TaskHandler) CreateReminder(w http.ResponseWriter, r *http.Request) {
 	taskID := parts[0]
 
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.sendError(w, r, "Data form tidak valid", http.StatusBadRequest)
 		return
 	}
 
@@ -295,12 +307,12 @@ func (h *TaskHandler) CreateReminder(w http.ResponseWriter, r *http.Request) {
 
 	remindAt, err := time.ParseInLocation("2006-01-02 15:04", dateStr+" "+timeStr, time.Local)
 	if err != nil {
-		http.Error(w, "format tanggal/jam tidak valid", http.StatusBadRequest)
+		h.sendError(w, r, "Format tanggal atau jam tidak valid", http.StatusBadRequest)
 		return
 	}
 
 	if _, err := h.reminders.Create(taskID, note, remindAt); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.sendError(w, r, "Gagal membuat reminder", http.StatusInternalServerError)
 		return
 	}
 
@@ -324,4 +336,11 @@ func extractID(path, prefix string) string {
 		id = id[:idx]
 	}
 	return id
+}
+
+func (h *TaskHandler) sendError(w http.ResponseWriter, r *http.Request, msg string, statusCode int) {
+	w.Header().Set("HX-Retarget", "#toast-container")
+	w.Header().Set("HX-Reswap", "beforeend")
+	w.WriteHeader(http.StatusOK)
+	components.ToastError(msg).Render(r.Context(), w)
 }
