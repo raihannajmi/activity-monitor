@@ -1,0 +1,194 @@
+package pages
+
+import (
+	"fmt"
+	"activity-monitor/templates/layouts"
+	"activity-monitor/templates/components"
+	"activity-monitor/internal/models"
+)
+
+templ Tasks(tasks []models.Task, filter string) {
+	@layouts.Base("Tasks", "tasks") {
+		<div class="page-container">
+			<div class="page-header">
+				<div>
+					<h1 class="page-title">Tasks</h1>
+					<p class="page-subtitle">Kelola semua pekerjaan kamu</p>
+				</div>
+				<button
+					class="btn btn-primary"
+					hx-get="/tasks/new"
+					hx-target="#modal-container"
+					hx-swap="innerHTML"
+					id="new-task-btn"
+				>+ Task Baru</button>
+			</div>
+
+			<!-- Filter Tabs -->
+			<div class="filter-tabs">
+				<a
+					href="/tasks"
+					class={ "filter-tab", templ.KV("filter-tab-active", filter == "" || filter == "all") }
+					id="filter-all"
+				>Semua</a>
+				<a
+					href="/tasks?filter=todo"
+					class={ "filter-tab", templ.KV("filter-tab-active", filter == "todo") }
+					id="filter-todo"
+				>Todo</a>
+				<a
+					href="/tasks?filter=in_progress"
+					class={ "filter-tab", templ.KV("filter-tab-active", filter == "in_progress") }
+					id="filter-progress"
+				>Sedang Dikerjakan</a>
+				<a
+					href="/tasks?filter=done"
+					class={ "filter-tab", templ.KV("filter-tab-active", filter == "done") }
+					id="filter-done"
+				>Selesai</a>
+			</div>
+
+			<!-- Task List -->
+			if len(tasks) == 0 {
+				<div class="empty-state empty-state-lg">
+					<div class="empty-icon">◻</div>
+					<p class="empty-title">Belum ada task</p>
+					<p class="empty-text">Buat task pertama kamu untuk mulai produktif</p>
+					<button
+						class="btn btn-primary"
+						hx-get="/tasks/new"
+						hx-target="#modal-container"
+						hx-swap="innerHTML"
+						id="empty-new-task-btn"
+					>+ Buat Task Baru</button>
+				</div>
+			} else {
+				<div class="task-list" id="task-list">
+					for _, task := range tasks {
+						@components.TaskCard(task)
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+templ TaskDetail(task models.Task) {
+	@layouts.Base(task.Title, "tasks") {
+		<div class="page-container">
+			<div class="detail-header">
+				<a href="/tasks" class="back-link" id="back-to-tasks">← Kembali ke Tasks</a>
+				<div class="detail-actions">
+					<button
+						class="btn btn-ghost"
+						hx-get={ "/tasks/" + task.ID + "/edit" }
+						hx-target="#modal-container"
+						hx-swap="innerHTML"
+						id="edit-task-detail-btn"
+					>Edit</button>
+					<button
+						class="btn btn-ghost btn-danger-ghost"
+						hx-delete={ "/tasks/" + task.ID }
+						hx-target="body"
+						hx-push-url="/tasks"
+						hx-confirm="Hapus task ini?"
+						id="delete-task-detail-btn"
+					>Hapus</button>
+				</div>
+			</div>
+
+			<div class="detail-card">
+				<div class="detail-meta">
+					<span class={ "priority-badge", task.PriorityColor() }>{ task.PriorityLabel() }</span>
+					<span class="status-text">{ task.StatusLabel() }</span>
+					if task.Deadline != nil {
+						<span class="task-deadline">◷ { task.Deadline.Format("02 Jan 2006") }</span>
+					}
+				</div>
+
+				<h1 class="detail-title">{ task.Title }</h1>
+
+				if task.Description != "" {
+					<p class="detail-desc">{ task.Description }</p>
+				}
+
+				if len(task.Subtasks) > 0 {
+					<div class="detail-progress">
+						@components.ProgressBar(task)
+					</div>
+				}
+
+				<!-- Status Actions -->
+				<div class="detail-status-actions">
+					if task.Status != models.StatusInProgress && task.Status != models.StatusDone {
+						<button
+							class="btn btn-secondary"
+							hx-put={ "/tasks/" + task.ID + "/status" }
+							hx-vals={ `{"status":"in_progress"}` }
+							hx-target="body"
+							hx-push-url={ "/tasks/" + task.ID }
+							id="start-task-detail-btn"
+						>Mulai Mengerjakan</button>
+					}
+					if task.Status != models.StatusDone {
+						<button
+							class="btn btn-primary"
+							hx-put={ "/tasks/" + task.ID + "/status" }
+							hx-vals={ `{"status":"done"}` }
+							hx-target="body"
+							hx-push-url={ "/tasks/" + task.ID }
+							id="done-task-detail-btn"
+						>Tandai Selesai</button>
+					}
+				</div>
+			</div>
+
+			<!-- Subtasks Section -->
+			<div class="section">
+				<div class="section-header">
+					<h2 class="section-title">Subtasks</h2>
+					<span class="section-badge">
+						{ func() string {
+							done, total := task.SubtaskProgress()
+							if total == 0 { return "0" }
+							return done_of(done, total)
+						}() }
+					</span>
+				</div>
+				@components.SubtaskList(task)
+			</div>
+
+			<!-- Reminders Section -->
+			<div class="section">
+				<div class="section-header">
+					<h2 class="section-title">Reminder</h2>
+					<button
+						class="btn btn-sm btn-ghost"
+						hx-get={ "/tasks/" + task.ID + "/reminder/new" }
+						hx-target="#modal-container"
+						hx-swap="innerHTML"
+						id="add-reminder-btn"
+					>+ Reminder</button>
+				</div>
+				if len(task.Reminders) == 0 {
+					<div class="empty-state empty-state-sm">
+						<p class="empty-text">Belum ada reminder untuk task ini</p>
+					</div>
+				} else {
+					<div class="reminder-list" id="reminder-list">
+						for _, r := range task.Reminders {
+							@components.ReminderCard(r)
+						}
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+func done_of(done, total int) string {
+	if total == 0 {
+		return "0"
+	}
+	return fmt.Sprintf("%d/%d", done, total)
+}

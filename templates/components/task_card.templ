@@ -1,0 +1,156 @@
+package components
+
+import (
+	"fmt"
+	"activity-monitor/internal/models"
+)
+
+templ TaskCard(task models.Task) {
+	<div class="card task-card" id={ fmt.Sprintf("task-%s", task.ID) }>
+		<div class="task-card-header">
+			<div class="task-card-meta">
+				<span class={ "priority-badge", task.PriorityColor() }>{ task.PriorityLabel() }</span>
+				if task.Status == models.StatusDone {
+					<span class="status-badge status-done">Selesai</span>
+				} else if task.Status == models.StatusInProgress {
+					<span class="status-badge status-inprogress">Sedang Dikerjakan</span>
+				}
+				if task.IsOverdue() {
+					<span class="status-badge status-overdue">Terlambat</span>
+				}
+			</div>
+			<div class="task-card-actions">
+				<button
+					class="btn-icon"
+					hx-get={ fmt.Sprintf("/tasks/%s/edit", task.ID) }
+					hx-target="#modal-container"
+					hx-swap="innerHTML"
+					title="Edit task"
+					id={ fmt.Sprintf("edit-task-%s", task.ID) }
+				>✎</button>
+				<button
+					class="btn-icon btn-danger"
+					hx-delete={ fmt.Sprintf("/tasks/%s", task.ID) }
+					hx-target={ fmt.Sprintf("#task-%s", task.ID) }
+					hx-swap="outerHTML swap:0.3s"
+					hx-confirm="Hapus task ini?"
+					title="Hapus task"
+					id={ fmt.Sprintf("delete-task-%s", task.ID) }
+				>✕</button>
+			</div>
+		</div>
+
+		<a href={ templ.SafeURL(fmt.Sprintf("/tasks/%s", task.ID)) } class="task-card-title">
+			{ task.Title }
+		</a>
+
+		if task.Description != "" {
+			<p class="task-card-desc">{ task.Description }</p>
+		}
+
+		if len(task.Subtasks) > 0 {
+			@ProgressBar(task)
+		}
+
+		<div class="task-card-footer">
+			if task.Deadline != nil {
+				<span class="task-deadline">◷ { task.Deadline.Format("02 Jan 2006") }</span>
+			}
+			<div class="task-status-actions">
+				if task.Status != models.StatusInProgress && task.Status != models.StatusDone {
+					<button
+						class="btn-sm btn-secondary"
+						hx-put={ fmt.Sprintf("/tasks/%s/status", task.ID) }
+						hx-vals={ fmt.Sprintf(`{"status":"in_progress"}`) }
+						hx-target={ fmt.Sprintf("#task-%s", task.ID) }
+						hx-swap="outerHTML"
+						id={ fmt.Sprintf("start-task-%s", task.ID) }
+					>Mulai</button>
+				}
+				if task.Status != models.StatusDone {
+					<button
+						class="btn-sm btn-primary"
+						hx-put={ fmt.Sprintf("/tasks/%s/status", task.ID) }
+						hx-vals={ fmt.Sprintf(`{"status":"done"}`) }
+						hx-target={ fmt.Sprintf("#task-%s", task.ID) }
+						hx-swap="outerHTML"
+						id={ fmt.Sprintf("done-task-%s", task.ID) }
+					>Selesai</button>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ ProgressBar(task models.Task) {
+	<div class="progress-section">
+		<div class="progress-header">
+			<span class="progress-label">Subtask</span>
+			<span class="progress-count">
+				{ func() string {
+					done, total := task.SubtaskProgress()
+					return fmt.Sprintf("%d / %d", done, total)
+				}() }
+			</span>
+		</div>
+		<div class="progress-bar-container">
+			<div
+				class="progress-bar-fill"
+				style={ fmt.Sprintf("width: %d%%", task.SubtaskPercent()) }
+			></div>
+		</div>
+		<span class="progress-pct">{ fmt.Sprintf("%d%%", task.SubtaskPercent()) }</span>
+	</div>
+}
+
+templ SubtaskList(task models.Task) {
+	<div class="subtask-list" id={ fmt.Sprintf("subtasks-%s", task.ID) }>
+		for _, sub := range task.Subtasks {
+			@SubtaskItem(sub, task.ID)
+		}
+
+		<!-- Add subtask form -->
+		<form
+			hx-post={ fmt.Sprintf("/tasks/%s/subtasks", task.ID) }
+			hx-target={ fmt.Sprintf("#subtasks-%s", task.ID) }
+			hx-swap="outerHTML"
+			class="subtask-add-form"
+			id={ fmt.Sprintf("subtask-form-%s", task.ID) }
+		>
+			<input
+				type="text"
+				name="title"
+				placeholder="+ Tambah subtask..."
+				class="subtask-input"
+				id={ fmt.Sprintf("subtask-input-%s", task.ID) }
+				autocomplete="off"
+			/>
+		</form>
+	</div>
+}
+
+templ SubtaskItem(sub models.Subtask, taskID string) {
+	<div class={ "subtask-item", templ.KV("subtask-done", sub.IsCompleted) } id={ fmt.Sprintf("subtask-%s", sub.ID) }>
+		<button
+			class={ "subtask-check", templ.KV("checked", sub.IsCompleted) }
+			hx-put={ fmt.Sprintf("/tasks/%s/subtasks/%s/toggle", taskID, sub.ID) }
+			hx-target={ fmt.Sprintf("#subtasks-%s", taskID) }
+			hx-swap="outerHTML"
+			id={ fmt.Sprintf("toggle-subtask-%s", sub.ID) }
+		>
+			if sub.IsCompleted {
+				✓
+			} else {
+				○
+			}
+		</button>
+		<span class="subtask-title">{ sub.Title }</span>
+		<button
+			class="btn-icon btn-danger subtask-delete"
+			hx-delete={ fmt.Sprintf("/tasks/%s/subtasks/%s", taskID, sub.ID) }
+			hx-target={ fmt.Sprintf("#subtask-%s", sub.ID) }
+			hx-swap="outerHTML swap:0.2s"
+			id={ fmt.Sprintf("delete-subtask-%s", sub.ID) }
+		>✕</button>
+	</div>
+}

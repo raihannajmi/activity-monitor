@@ -1,0 +1,216 @@
+package components
+
+import "activity-monitor/internal/models"
+
+templ TaskFormModal(task *models.Task, allTasks []models.Task) {
+	<div class="modal-backdrop" id="modal-backdrop">
+		<div class="modal" id="task-modal" role="dialog" aria-modal="true">
+			<div class="modal-header">
+				<h2 class="modal-title">
+					if task != nil {
+						Edit Task
+					} else {
+						Task Baru
+					}
+				</h2>
+				<button class="modal-close" onclick="document.getElementById('modal-container').innerHTML=''" id="close-task-modal">✕</button>
+			</div>
+			<form
+				if task != nil {
+					hx-put={ "/tasks/" + task.ID }
+				} else {
+					hx-post="/tasks"
+				}
+				hx-target="#task-list"
+				hx-swap="outerHTML"
+				hx-on::after-request="document.getElementById('modal-container').innerHTML=''"
+				class="modal-form"
+				id="task-form"
+			>
+				<div class="form-group">
+					<label for="task-title" class="form-label">Judul</label>
+					<input
+						type="text"
+						id="task-title"
+						name="title"
+						class="form-input"
+						placeholder="Nama task..."
+						required
+						if task != nil {
+							value={ task.Title }
+						}
+						autofocus
+					/>
+				</div>
+				<div class="form-group">
+					<label for="task-desc" class="form-label">Deskripsi</label>
+					<textarea
+						id="task-desc"
+						name="description"
+						class="form-textarea"
+						placeholder="Detail task (opsional)..."
+						rows="3"
+					>
+						if task != nil {
+							{ task.Description }
+						}
+					</textarea>
+				</div>
+				<div class="form-row">
+					<div class="form-group">
+						<label for="task-priority" class="form-label">Prioritas</label>
+						<select id="task-priority" name="priority" class="form-select">
+							<option value="low"
+								if task != nil && task.Priority == models.PriorityLow {
+									selected
+								}
+							>Low</option>
+							<option value="medium"
+								if task == nil || task.Priority == models.PriorityMedium {
+									selected
+								}
+							>Medium</option>
+							<option value="high"
+								if task != nil && task.Priority == models.PriorityHigh {
+									selected
+								}
+							>High</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="task-deadline" class="form-label">Deadline</label>
+						<input
+							type="date"
+							id="task-deadline"
+							name="deadline"
+							class="form-input"
+							if task != nil && task.Deadline != nil {
+								value={ task.Deadline.Format("2006-01-02") }
+							}
+						/>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-container').innerHTML=''" id="cancel-task-form">Batal</button>
+					<button type="submit" class="btn btn-primary" id="submit-task-form">
+						if task != nil {
+							Simpan Perubahan
+						} else {
+							Buat Task
+						}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ NoteFormModal(note *models.Note) {
+	<div class="modal-backdrop" id="modal-backdrop">
+		<div class="modal modal-wide" id="note-modal" role="dialog" aria-modal="true">
+			<div class="modal-header">
+				<h2 class="modal-title">
+					if note != nil {
+						Edit Catatan
+					} else {
+						Catatan Baru
+					}
+				</h2>
+				<button class="modal-close" onclick="document.getElementById('modal-container').innerHTML=''" id="close-note-modal">✕</button>
+			</div>
+			<form
+				if note != nil {
+					hx-put={ "/notes/" + note.ID }
+				} else {
+					hx-post="/notes"
+				}
+				hx-target="#notes-list"
+				hx-swap="outerHTML"
+				hx-on::after-request="document.getElementById('modal-container').innerHTML=''"
+				class="modal-form"
+				id="note-form"
+			>
+				<div class="form-group">
+					<label for="note-title" class="form-label">Judul</label>
+					<input
+						type="text"
+						id="note-title"
+						name="title"
+						class="form-input"
+						placeholder="Judul catatan..."
+						required
+						if note != nil {
+							value={ note.Title }
+						}
+						autofocus
+					/>
+				</div>
+				<div class="form-group">
+					<label for="note-content" class="form-label">Isi Catatan</label>
+					<textarea
+						id="note-content"
+						name="content"
+						class="form-textarea form-textarea-tall"
+						placeholder="Tulis ide, pikiran, atau rencana kamu di sini..."
+						rows="10"
+					>
+						if note != nil {
+							{ note.Content }
+						}
+					</textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-container').innerHTML=''" id="cancel-note-form">Batal</button>
+					<button type="submit" class="btn btn-primary" id="submit-note-form">
+						if note != nil {
+							Simpan Perubahan
+						} else {
+							Simpan Catatan
+						}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ ReminderFormModal(taskID, taskTitle string) {
+	<div class="modal-backdrop" id="modal-backdrop">
+		<div class="modal" id="reminder-modal" role="dialog" aria-modal="true">
+			<div class="modal-header">
+				<h2 class="modal-title">Buat Reminder</h2>
+				<button class="modal-close" onclick="document.getElementById('modal-container').innerHTML=''" id="close-reminder-modal">✕</button>
+			</div>
+			if taskTitle != "" {
+				<p class="modal-subtitle">untuk: <strong>{ taskTitle }</strong></p>
+			}
+			<form
+				hx-post={ "/tasks/" + taskID + "/reminders" }
+				hx-target="#modal-container"
+				hx-swap="innerHTML"
+				hx-on::after-request="document.getElementById('modal-container').innerHTML=''"
+				class="modal-form"
+				id="reminder-form"
+			>
+				<div class="form-row">
+					<div class="form-group">
+						<label for="reminder-date" class="form-label">Tanggal</label>
+						<input type="date" id="reminder-date" name="date" class="form-input" required/>
+					</div>
+					<div class="form-group">
+						<label for="reminder-time" class="form-label">Jam</label>
+						<input type="time" id="reminder-time" name="time" class="form-input" required/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="reminder-note" class="form-label">Catatan (opsional)</label>
+					<input type="text" id="reminder-note" name="note" class="form-input" placeholder="Pengingat singkat..."/>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-container').innerHTML=''" id="cancel-reminder-form">Batal</button>
+					<button type="submit" class="btn btn-primary" id="submit-reminder-form">Buat Reminder</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}

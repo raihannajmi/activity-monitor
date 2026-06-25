@@ -1,0 +1,101 @@
+package components
+
+import (
+	"fmt"
+	"activity-monitor/internal/models"
+)
+
+templ NoteCard(note models.Note) {
+	<div class="card note-card" id={ fmt.Sprintf("note-%s", note.ID) }>
+		<div class="note-card-header">
+			<h3 class="note-title">{ note.Title }</h3>
+			<div class="note-actions">
+				<button
+					class="btn-icon"
+					hx-get={ fmt.Sprintf("/notes/%s/edit", note.ID) }
+					hx-target="#modal-container"
+					hx-swap="innerHTML"
+					title="Edit catatan"
+					id={ fmt.Sprintf("edit-note-%s", note.ID) }
+				>✎</button>
+				<button
+					class="btn-icon btn-danger"
+					hx-delete={ fmt.Sprintf("/notes/%s", note.ID) }
+					hx-target={ fmt.Sprintf("#note-%s", note.ID) }
+					hx-swap="outerHTML swap:0.3s"
+					hx-confirm="Hapus catatan ini?"
+					title="Hapus catatan"
+					id={ fmt.Sprintf("delete-note-%s", note.ID) }
+				>✕</button>
+			</div>
+		</div>
+		if note.Content != "" {
+			<p class="note-excerpt">{ note.Excerpt(180) }</p>
+		}
+		<div class="note-footer">
+			<span class="note-date">{ note.UpdatedAt.Format("02 Jan 2006, 15:04") }</span>
+		</div>
+	</div>
+}
+
+templ ReminderCard(r models.Reminder) {
+	<div class={ "card reminder-card", templ.KV("reminder-overdue", r.IsOverdue()) } id={ fmt.Sprintf("reminder-%s", r.ID) }>
+		<div class="reminder-time">
+			<span class="reminder-icon">◷</span>
+			<span class="reminder-at">{ r.RemindAt.Format("15:04") }</span>
+			<span class="reminder-date-label">{ r.RemindAt.Format("02 Jan") }</span>
+		</div>
+		if r.TaskTitle != "" {
+			<div class="reminder-task">{ r.TaskTitle }</div>
+		}
+		if r.Note != "" {
+			<div class="reminder-note">{ r.Note }</div>
+		}
+		<div class="reminder-actions">
+			if !r.IsDone {
+				<button
+					class="btn-sm btn-primary"
+					hx-put={ fmt.Sprintf("/reminders/%s/done", r.ID) }
+					hx-target={ fmt.Sprintf("#reminder-%s", r.ID) }
+					hx-swap="outerHTML"
+					id={ fmt.Sprintf("done-reminder-%s", r.ID) }
+				>Selesai</button>
+			} else {
+				<span class="reminder-done-badge">✓ Selesai</span>
+			}
+			<button
+				class="btn-icon btn-danger"
+				hx-delete={ fmt.Sprintf("/reminders/%s", r.ID) }
+				hx-target={ fmt.Sprintf("#reminder-%s", r.ID) }
+				hx-swap="outerHTML swap:0.3s"
+				id={ fmt.Sprintf("delete-reminder-%s", r.ID) }
+			>✕</button>
+		</div>
+	</div>
+}
+
+templ ActivityItem(a models.Activity) {
+	<div class="activity-item" id={ fmt.Sprintf("activity-%s", a.ID) }>
+		<div class="activity-time-col">
+			<span class="activity-time">{ a.CreatedAt.Format("15:04") }</span>
+		</div>
+		<div class="activity-connector">
+			<div class="activity-dot">{ a.Icon() }</div>
+			<div class="activity-line"></div>
+		</div>
+		<div class="activity-content">
+			<p class="activity-desc">{ a.Description }</p>
+			<span class="activity-date">{ a.CreatedAt.Format("02 Jan 2006") }</span>
+		</div>
+	</div>
+}
+
+templ StatsCard(label string, value int, icon string, color string) {
+	<div class={ "stats-card", color }>
+		<div class="stats-icon">{ icon }</div>
+		<div class="stats-info">
+			<div class="stats-value">{ fmt.Sprintf("%d", value) }</div>
+			<div class="stats-label">{ label }</div>
+		</div>
+	</div>
+}

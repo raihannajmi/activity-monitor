@@ -1,0 +1,64 @@
+package pages
+
+import (
+	"activity-monitor/templates/layouts"
+	"activity-monitor/templates/components"
+	"activity-monitor/internal/models"
+)
+
+templ Notes(notes []models.Note, query string) {
+	@layouts.Base("Brain Dump", "notes") {
+		<div class="page-container">
+			<div class="page-header">
+				<div>
+					<h1 class="page-title">Brain Dump</h1>
+					<p class="page-subtitle">Tulis apa saja yang ada di pikiranmu</p>
+				</div>
+				<button
+					class="btn btn-primary"
+					hx-get="/notes/new"
+					hx-target="#modal-container"
+					hx-swap="innerHTML"
+					id="new-note-btn"
+				>+ Catatan Baru</button>
+			</div>
+
+			<!-- Search -->
+			<div class="search-bar">
+				<span class="search-icon">⌕</span>
+				<input
+					type="search"
+					id="notes-search"
+					name="q"
+					class="search-input"
+					placeholder="Cari catatan..."
+					value={ query }
+					hx-get="/notes/search"
+					hx-trigger="keyup changed delay:350ms, search"
+					hx-target="#notes-list"
+					hx-swap="outerHTML"
+					autocomplete="off"
+				/>
+			</div>
+
+			<!-- Notes Grid -->
+			@NotesList(notes)
+		</div>
+	}
+}
+
+templ NotesList(notes []models.Note) {
+	if len(notes) == 0 {
+		<div class="empty-state empty-state-lg" id="notes-list">
+			<div class="empty-icon">✐</div>
+			<p class="empty-title">Belum ada catatan</p>
+			<p class="empty-text">Mulai tulis ide atau pikiranmu di sini</p>
+		</div>
+	} else {
+		<div class="notes-grid" id="notes-list">
+			for _, note := range notes {
+				@components.NoteCard(note)
+			}
+		</div>
+	}
+}

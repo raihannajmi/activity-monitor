@@ -26,6 +26,14 @@ func NewTaskService(
 	return &TaskService{tasks, subtasks, reminders, activities}
 }
 
+func (s *TaskService) ListByStatus(status string) ([]models.Task, error) {
+	return s.tasks.ListByStatus(status)
+}
+
+func (s *TaskService) GetSubtasks(taskID string) ([]models.Subtask, error) {
+	return s.subtasks.ListByTaskID(taskID)
+}
+
 func (s *TaskService) ListAll() ([]models.Task, error) {
 	return s.tasks.ListAll()
 }
