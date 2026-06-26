@@ -44,166 +44,146 @@ templ Dashboard(data DashboardData) {
 			)
 			@components.PageToolbar()
 
-			<!-- Stats Row -->
-			<div class="stats-grid">
-				@components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-kanban"), "stats-blue")
-				@components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("circle-check"), "stats-green")
-				@components.StatsCard("Hari Ini", data.TodayTasks, DashboardIcon("clock-3"), "stats-orange")
-				@components.StatsCard("Reminder", data.TodayReminders, DashboardIcon("bell"), "stats-purple")
-			</div>
-
-			<!-- Bento Grid -->
-			<div class="bento-grid">
-				<!-- Kanban Board Widget -->
-				<div class="bento-kanban">
-					<div class="section-header" style="margin-bottom: 0;">
-						<h2 class="section-title" style="display: flex; align-items: center; gap: 0.5rem;">
-							<i data-lucide="square-kanban" style="width: 20px; height: 20px; color: var(--color-primary);"></i> Tasks Board
-						</h2>
-						<p class="page-subtitle" style="margin: 0.25rem 0 0 1.75rem; font-size: 0.75rem;">Kelola semua pekerjaan kamu</p>
-					</div>
+			<!-- Main Layout 70/30 -->
+			<div class="page-content-scroll">
+				<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
 					
-					<div class="kanban-board" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; flex: 1; margin-top: 0.5rem;">
-						<!-- Todo Column -->
-						<div class="kanban-col">
-							<div class="kanban-col-header">
-								<h2 class="kanban-col-title">To Do</h2>
-								<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")) }</span>
-							</div>
-							<div class="kanban-list" id="col-todo" data-status="todo" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
-								for _, task := range data.AllTasks {
-									if task.Status == models.Status("todo") {
-										@components.TaskCard(task)
-									}
-								}
-							</div>
+					<!-- Left Content (70%) -->
+					<div style="flex: 1 1 60%; min-width: 0; display: flex; flex-direction: column;">
+						<!-- Stats Row -->
+						<div class="stats-grid">
+							@components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-kanban"), "stats-blue")
+							@components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("circle-check"), "stats-green")
+							@components.StatsCard("Hari Ini", data.TodayTasks, DashboardIcon("clock-3"), "stats-orange")
+							@components.StatsCard("Reminder", data.TodayReminders, DashboardIcon("bell"), "stats-purple")
 						</div>
 
-						<!-- In Progress Column -->
-						<div class="kanban-col">
-							<div class="kanban-col-header">
-								<h2 class="kanban-col-title">Sedang Dikerjakan</h2>
-								<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")) }</span>
-							</div>
-							<div class="kanban-list" id="col-inprogress" data-status="in_progress" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
-								for _, task := range data.AllTasks {
-									if task.Status == models.Status("in_progress") {
-										@components.TaskCard(task)
-									}
-								}
-							</div>
-						</div>
-
-						<!-- Done Column -->
-						<div class="kanban-col">
-							<div class="kanban-col-header">
-								<h2 class="kanban-col-title">Selesai</h2>
-								<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "done")) }</span>
-							</div>
-							<div class="kanban-list" id="col-done" data-status="done" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
-								for _, task := range data.AllTasks {
-									if task.Status == models.Status("done") {
-										@components.TaskCard(task)
-									}
-								}
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Laporan Waktu Widget -->
-				<div class="bento-reports">
-					<div class="bento-reports-header">
-						<h2 class="bento-reports-title">
-							<i data-lucide="clock-3" style="width: 20px; height: 20px; color: var(--color-primary);"></i> Laporan Waktu
-						</h2>
-						<a href="/reports" style="font-size: 0.75rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">Lihat Semua</a>
-					</div>
-					
-					if len(data.RecentTimeLogs) == 0 {
-						<div class="empty-state empty-state-sm">
-							<p class="empty-text">Belum ada sesi waktu terekam.</p>
-						</div>
-					} else {
-						<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
-							for _, log := range data.RecentTimeLogs {
-								<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem;">
-									<div style="display: flex; align-items: center; gap: 0.75rem;">
-										<div style="width: 28px; height: 28px; border-radius: 8px; background: #EEF2FF; color: #4F46E5; display: flex; align-items: center; justify-content: center;"><i data-lucide="play" style="width: 14px; height: 14px;"></i></div>
-										<div>
-											<div style="font-size: 0.875rem; font-weight: 500;">{ log.TaskTitle }</div>
-											<div style="font-size: 0.65rem; color: var(--color-text-muted);">{ log.StartTime.Format("02 Jan, 15:04") }</div>
-										</div>
+						<!-- Kanban Board -->
+						<div class="kanban-board-container">
+							<div class="kanban-board">
+								<!-- Todo Column -->
+								<div class="kanban-col">
+									<div class="kanban-col-header">
+										<h2 class="kanban-col-title">To Do</h2>
+										<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")) }</span>
 									</div>
-									<div style="display: flex; align-items: center; gap: 1rem;">
-										<div class="tabular-nums" style="font-size: 0.75rem; font-weight: 500;">
-											if log.DurationSeconds > 0 {
-												{ fmt.Sprintf("%dm %ds", log.DurationSeconds / 60, log.DurationSeconds % 60) }
-											} else {
-												-
+									<div class="kanban-list" id="col-todo" data-status="todo" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
+										for _, task := range data.AllTasks {
+											if task.Status == models.Status("todo") {
+												@components.TaskCard(task)
 											}
-										</div>
-										<div class="report-badge" style="font-size: 0.65rem; padding: 2px 6px;">{ log.SessionType }</div>
+										}
 									</div>
+								</div>
+
+								<!-- In Progress Column -->
+								<div class="kanban-col">
+									<div class="kanban-col-header">
+										<h2 class="kanban-col-title">Sedang Dikerjakan</h2>
+										<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")) }</span>
+									</div>
+									<div class="kanban-list" id="col-inprogress" data-status="in_progress" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
+										for _, task := range data.AllTasks {
+											if task.Status == models.Status("in_progress") {
+												@components.TaskCard(task)
+											}
+										}
+									</div>
+								</div>
+
+								<!-- Done Column -->
+								<div class="kanban-col">
+									<div class="kanban-col-header">
+										<h2 class="kanban-col-title">Selesai</h2>
+										<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "done")) }</span>
+									</div>
+									<div class="kanban-list" id="col-done" data-status="done" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
+										for _, task := range data.AllTasks {
+											if task.Status == models.Status("done") {
+												@components.TaskCard(task)
+											}
+										}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right Sidebar (30%) -->
+					<div class="right-sidebar">
+						<!-- Laporan Waktu Widget -->
+						<div class="rs-card">
+							<div class="rs-card-header">
+								<h2 class="rs-card-title">Laporan Waktu</h2>
+								<a href="/reports" style="font-size: 13px; color: var(--color-primary); font-weight: 500;">Lihat Semua</a>
+							</div>
+							
+							if len(data.RecentTimeLogs) == 0 {
+								<div class="empty-state empty-state-sm">
+									<i data-lucide="clock" class="empty-icon"></i>
+									<h3 class="h3" style="font-size: 14px; margin-bottom: 4px;">Belum ada waktu terekam</h3>
+									<p style="font-size: 13px; color: var(--color-text-secondary);">Mulai tracking task kamu</p>
+								</div>
+							} else {
+								<div class="time-track-list">
+									for _, log := range data.RecentTimeLogs {
+										<div class="time-track-item">
+											<div class="tt-play-icon"><i data-lucide="play" style="width: 16px; height: 16px;"></i></div>
+											<div class="tt-info">
+												<span class="tt-name">{ log.TaskTitle }</span>
+												<span class="tt-date">{ log.StartTime.Format("02 Jan, 15:04") }</span>
+											</div>
+											<div class="tt-duration">
+												if log.DurationSeconds > 0 {
+													{ fmt.Sprintf("%dm %ds", log.DurationSeconds / 60, log.DurationSeconds % 60) }
+												} else {
+													-
+												}
+											</div>
+										</div>
+									}
 								</div>
 							}
 						</div>
-					}
-				</div>
 
-				<!-- Brain Dump Widget -->
-				<div class="bento-braindump">
-					<div class="bento-reports-header" style="margin-bottom: 0.5rem;">
-						<h2 class="bento-reports-title">
-							<i data-lucide="brain-circuit" style="width: 20px; height: 20px; color: var(--color-primary);"></i> Brain Dump
-						</h2>
-					</div>
-					<p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0 0 0.5rem 1.75rem;">Catat ide atau hal yang mengganggu pikiranmu</p>
-					
-					<form hx-post="/notes" hx-swap="none" hx-on::after-request="this.reset()">
-						<textarea name="content" placeholder="Tulis apa saja di sini..." required></textarea>
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
-							<span style="font-size: 0.65rem; color: var(--color-text-muted);">Hanya kamu yang bisa melihat ini</span>
-							<button type="submit" class="btn btn-sm btn-primary">Simpan</button>
-						</div>
-					</form>
-				</div>
-
-				<!-- Ringkasan Fokus Widget -->
-				<div class="bento-ringkasan">
-					<div>
-						<h2 class="bento-reports-title" style="margin-bottom: 1.5rem;">
-							<span style="color: var(--color-primary);">📈</span> Ringkasan Fokus
-						</h2>
-						<div class="ringkasan-stats">
-							<div class="ringkasan-stat">
-								<h4>Sesi Selesai</h4>
-								<p>
+						<!-- Focus Card -->
+						<div class="rs-card">
+							<h2 class="rs-card-title">Target Pomodoro</h2>
+							<div style="display: flex; align-items: flex-end; gap: 8px;">
+								<span class="focus-pomodoro">
 									if data.DailyRecap != nil {
 										{ fmt.Sprintf("%d", data.DailyRecap.PomodorosCompleted) }
 									} else {
 										0
 									}
-								</p>
-								<span>dari 5 target</span>
+								</span>
+								<span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 6px;">/ 5 sesi</span>
 							</div>
-							<div class="ringkasan-stat">
-								<h4>Waktu Fokus</h4>
-								<p>
-									if data.DailyRecap != nil {
-										{ formatDuration(data.DailyRecap.TotalFocusSeconds) }
-									} else {
-										0h 0m
-									}
-								</p>
-								<span>dari 2h target</span>
+							<div class="focus-progress">
+								<div class="focus-progress-bar" style={ fmt.Sprintf("width: %d%%", calculateProgress(data.DailyRecap)) }></div>
+							</div>
+							<div style="font-size: 13px; color: var(--color-text-secondary); font-weight: 500;">
+								Waktu fokus: 
+								if data.DailyRecap != nil {
+									{ formatDuration(data.DailyRecap.TotalFocusSeconds) }
+								} else {
+									0h 0m
+								}
 							</div>
 						</div>
-					</div>
-					<div>
-						<!-- Circular progress calculation -->
-						<div class="circular-progress" style={ fmt.Sprintf("background: conic-gradient(var(--color-primary) %d%%, #F3F4F6 0)", calculateProgress(data.DailyRecap)) }>
-							<span class="circular-progress-value">{ fmt.Sprintf("%d%%", calculateProgress(data.DailyRecap)) }</span>
+
+						<!-- Brain Dump Widget -->
+						<div class="rs-card">
+							<div class="rs-card-header">
+								<h2 class="rs-card-title">Brain Dump</h2>
+							</div>
+							<form hx-post="/notes" hx-swap="none" hx-on::after-request="this.reset()" style="display: flex; flex-direction: column; gap: 12px;">
+								<textarea name="content" class="brain-dump-textarea" placeholder="Tulis apa saja yang ada di pikiranmu..." required></textarea>
+								<div style="display: flex; justify-content: space-between; align-items: center;">
+									<span style="font-size: 12px; color: var(--color-text-secondary);">Hanya kamu yang bisa melihat ini</span>
+									<button type="submit" class="btn btn-primary" style="height: 36px; padding: 0 16px; border-radius: 8px; font-size: 13px;">Simpan</button>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
