@@ -15,23 +15,32 @@ type DashboardData struct {
 	TasksDueToday  []models.Task
 	Reminders      []models.Reminder
 	DailyRecap     *models.DailyRecap
+	AllTasks       []models.Task
+	RecentTimeLogs []models.TimeLogWithDetails
 }
 
 templ Dashboard(data DashboardData) {
 	@layouts.Base("Dashboard", "dashboard") {
 		<div class="page-container">
-			<div class="page-header">
+			<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
 				<div>
-					<h1 class="page-title">Dashboard</h1>
-					<p class="page-subtitle">{ fmt.Sprintf("Hai! Hari ini ada %d task yang menunggu.", data.TodayTasks) }</p>
+					<p style="margin: 0; font-size: 0.875rem; font-weight: 500;">Hai! 👋</p>
+					<h1 class="page-title" style="margin: 0.25rem 0; font-size: 1.75rem;">Selamat datang kembali!</h1>
+					<p class="page-subtitle">Mari fokus dan selesaikan hal-hal penting hari ini.</p>
 				</div>
-				<button
-					class="btn btn-primary"
-					hx-get="/tasks/new"
-					hx-target="#modal-container"
-					hx-swap="innerHTML"
-					id="new-task-btn"
-				>+ Task Baru</button>
+				<div style="display: flex; gap: 1rem; align-items: center;">
+					<div class="date-badge" style="background: white; border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+						<span style="color: var(--color-text-muted);">📅</span> 
+						<span>Hari Ini</span>
+					</div>
+					<button
+						class="btn btn-primary"
+						hx-get="/tasks/new"
+						hx-target="#modal-container"
+						hx-swap="innerHTML"
+						id="new-task-btn"
+					>+ Task Baru</button>
+				</div>
 			</div>
 
 			<!-- Stats Row -->
@@ -42,74 +51,222 @@ templ Dashboard(data DashboardData) {
 				@components.StatsCard("Reminder", data.TodayReminders, "◎", "stats-purple")
 			</div>
 
-			<div class="dashboard-grid">
-				<!-- Left Column -->
-				<div class="dashboard-main">
-					<!-- Tasks Today -->
-					<section class="section">
-						<div class="section-header">
-							<h2 class="section-title">Task Hari Ini</h2>
-							<a href="/tasks" class="section-link">Lihat Semua →</a>
-						</div>
-						if len(data.TasksDueToday) == 0 {
-							<div class="empty-state">
-								<div class="empty-icon">✓</div>
-								<p class="empty-text">Tidak ada task untuk hari ini</p>
-								<button
-									class="btn btn-sm btn-primary"
-									hx-get="/tasks/new"
-									hx-target="#modal-container"
-									hx-swap="innerHTML"
-									id="empty-new-task-btn"
-								>Buat Task</button>
+			<!-- Bento Grid -->
+			<div class="bento-grid">
+				<!-- Kanban Board Widget -->
+				<div class="bento-kanban">
+					<div class="section-header" style="margin-bottom: 0;">
+						<h2 class="section-title" style="display: flex; align-items: center; gap: 0.5rem;">
+							<span style="color: var(--color-primary);">📋</span> Tasks Board
+						</h2>
+						<p class="page-subtitle" style="margin: 0.25rem 0 0 1.75rem; font-size: 0.75rem;">Kelola semua pekerjaan kamu</p>
+					</div>
+					
+					<div class="kanban-board" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; flex: 1; margin-top: 1rem;">
+						<!-- Todo Column -->
+						<div class="kanban-col">
+							<div class="kanban-header">
+								<h2 class="kanban-title">To Do</h2>
+								<span class="kanban-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")) }</span>
 							</div>
-						} else {
-							<div class="task-list" id="today-task-list">
-								for _, task := range data.TasksDueToday {
-									@components.TaskCard(task)
+							<div class="kanban-list" id="col-todo" data-status="todo" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
+								for _, task := range data.AllTasks {
+									if task.Status == models.Status("todo") {
+										@components.TaskCard(task)
+									}
 								}
 							</div>
-						}
-					</section>
-
-					<!-- Daily Recap Focus -->
-					<section class="section">
-						<div class="section-header">
-							<h2 class="section-title">Rekap Fokus Hari Ini</h2>
 						</div>
-						if data.DailyRecap == nil || (data.DailyRecap.PomodorosCompleted == 0 && data.DailyRecap.TotalFocusSeconds == 0) {
-							<div class="empty-state">
-								<p class="empty-text">Belum ada sesi fokus hari ini. Mulai kerjakan task-mu!</p>
+
+						<!-- In Progress Column -->
+						<div class="kanban-col">
+							<div class="kanban-header">
+								<h2 class="kanban-title">Sedang Dikerjakan</h2>
+								<span class="kanban-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")) }</span>
 							</div>
-						} else {
-							<div class="stats-grid">
-								@components.StatsCard("Sesi Selesai", data.DailyRecap.PomodorosCompleted, "🍅", "stats-red")
-								@components.StatsCard("Waktu Fokus", data.DailyRecap.TotalFocusSeconds / 60, "⏱️", "stats-blue") <!-- Menit -->
+							<div class="kanban-list" id="col-inprogress" data-status="in_progress" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
+								for _, task := range data.AllTasks {
+									if task.Status == models.Status("in_progress") {
+										@components.TaskCard(task)
+									}
+								}
 							</div>
-						}
-					</section>
+						</div>
+
+						<!-- Done Column -->
+						<div class="kanban-col">
+							<div class="kanban-header">
+								<h2 class="kanban-title">Selesai</h2>
+								<span class="kanban-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "done")) }</span>
+							</div>
+							<div class="kanban-list" id="col-done" data-status="done" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
+								for _, task := range data.AllTasks {
+									if task.Status == models.Status("done") {
+										@components.TaskCard(task)
+									}
+								}
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<!-- Right Column: Reminders -->
-				<div class="dashboard-sidebar">
-					<section class="section">
-						<div class="section-header">
-							<h2 class="section-title">Reminder Hari Ini</h2>
+				<!-- Laporan Waktu Widget -->
+				<div class="bento-reports">
+					<div class="bento-reports-header">
+						<h2 class="bento-reports-title">
+							<span style="color: var(--color-primary);">⏱️</span> Laporan Waktu
+						</h2>
+						<a href="/reports" style="font-size: 0.75rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">Lihat Semua</a>
+					</div>
+					
+					if len(data.RecentTimeLogs) == 0 {
+						<div class="empty-state empty-state-sm">
+							<p class="empty-text">Belum ada sesi waktu terekam.</p>
 						</div>
-						if len(data.Reminders) == 0 {
-							<div class="empty-state empty-state-sm">
-								<p class="empty-text">Tidak ada reminder hari ini</p>
+					} else {
+						<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+							for _, log := range data.RecentTimeLogs {
+								<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem;">
+									<div style="display: flex; align-items: center; gap: 0.75rem;">
+										<div style="width: 24px; height: 24px; border-radius: 50%; background: #F3E8FF; color: #9333EA; display: flex; align-items: center; justify-content: center; font-size: 0.65rem;">▶</div>
+										<div>
+											<div style="font-size: 0.875rem; font-weight: 500;">{ log.TaskTitle }</div>
+											<div style="font-size: 0.65rem; color: var(--color-text-muted);">{ log.StartTime.Format("02 Jan, 15:04") }</div>
+										</div>
+									</div>
+									<div style="display: flex; align-items: center; gap: 1rem;">
+										<div class="tabular-nums" style="font-size: 0.75rem; font-weight: 500;">
+											if log.DurationSeconds > 0 {
+												{ fmt.Sprintf("%dm %ds", log.DurationSeconds / 60, log.DurationSeconds % 60) }
+											} else {
+												-
+											}
+										</div>
+										<div class="report-badge" style="font-size: 0.65rem; padding: 2px 6px;">{ log.SessionType }</div>
+									</div>
+								</div>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Brain Dump Widget -->
+				<div class="bento-braindump">
+					<div class="bento-reports-header" style="margin-bottom: 0.5rem;">
+						<h2 class="bento-reports-title">
+							<span style="color: var(--color-primary);">✏️</span> Brain Dump
+						</h2>
+					</div>
+					<p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0 0 0.5rem 1.75rem;">Catat ide atau hal yang mengganggu pikiranmu</p>
+					
+					<form hx-post="/notes" hx-swap="none" hx-on::after-request="this.reset()">
+						<textarea name="content" placeholder="Tulis apa saja di sini..." required></textarea>
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
+							<span style="font-size: 0.65rem; color: var(--color-text-muted);">Hanya kamu yang bisa melihat ini</span>
+							<button type="submit" class="btn btn-sm btn-primary">Simpan</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- Ringkasan Fokus Widget -->
+				<div class="bento-ringkasan">
+					<div>
+						<h2 class="bento-reports-title" style="margin-bottom: 1.5rem;">
+							<span style="color: var(--color-primary);">📈</span> Ringkasan Fokus
+						</h2>
+						<div class="ringkasan-stats">
+							<div class="ringkasan-stat">
+								<h4>Sesi Selesai</h4>
+								<p>
+									if data.DailyRecap != nil {
+										{ fmt.Sprintf("%d", data.DailyRecap.PomodorosCompleted) }
+									} else {
+										0
+									}
+								</p>
+								<span>dari 5 target</span>
 							</div>
-						} else {
-							<div class="reminder-list">
-								for _, r := range data.Reminders {
-									@components.ReminderCard(r)
-								}
+							<div class="ringkasan-stat">
+								<h4>Waktu Fokus</h4>
+								<p>
+									if data.DailyRecap != nil {
+										{ formatDuration(data.DailyRecap.TotalFocusSeconds) }
+									} else {
+										0h 0m
+									}
+								</p>
+								<span>dari 2h target</span>
 							</div>
-						}
-					</section>
+						</div>
+					</div>
+					<div>
+						<!-- Circular progress calculation -->
+						<div class="circular-progress" style={ fmt.Sprintf("background: conic-gradient(var(--color-primary) %d%%, #F3F4F6 0)", calculateProgress(data.DailyRecap)) }>
+							<span class="circular-progress-value">{ fmt.Sprintf("%d%%", calculateProgress(data.DailyRecap)) }</span>
+						</div>
+					</div>
 				</div>
 			</div>
+			
+			<!-- Include Sortable JS inside dashboard to make Kanban work -->
+			<script>
+				if (typeof Sortable !== 'undefined') {
+					initSortable();
+				} else {
+					// Fallback if Sortable is loaded later
+					document.addEventListener('DOMContentLoaded', initSortable);
+				}
+				
+				function initSortable() {
+					var cols = document.querySelectorAll('.kanban-list');
+					cols.forEach(function(col) {
+						new Sortable(col, {
+							group: 'shared',
+							animation: 150,
+							ghostClass: 'sortable-ghost',
+							onEnd: function (evt) {
+								var itemEl = evt.item;
+								var toCol = evt.to;
+								var newStatus = toCol.getAttribute('data-status');
+								var taskId = itemEl.getAttribute('data-task-id');
+								
+								// Trigger HTMX request to update status if needed
+							},
+						});
+					});
+				}
+			</script>
 		</div>
 	}
+}
+
+func countStatus(tasks []models.Task, status string) int {
+	count := 0
+	for _, t := range tasks {
+		if t.Status == models.Status(status) {
+			count++
+		}
+	}
+	return count
+}
+
+func formatDuration(seconds int) string {
+	h := seconds / 3600
+	m := (seconds % 3600) / 60
+	if h > 0 {
+		return fmt.Sprintf("%dh %dm", h, m)
+	}
+	return fmt.Sprintf("%dm", m)
+}
+
+func calculateProgress(recap *models.DailyRecap) int {
+	if recap == nil || recap.TotalFocusSeconds == 0 {
+		return 0
+	}
+	targetSeconds := 7200
+	progress := int(float64(recap.TotalFocusSeconds) / float64(targetSeconds) * 100)
+	if progress > 100 {
+		return 100
+	}
+	return progress
 }

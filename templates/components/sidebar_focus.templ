@@ -1,0 +1,61 @@
+package components
+
+import (
+	"fmt"
+	"activity-monitor/internal/models"
+)
+
+templ SidebarFocusWidget(recap *models.DailyRecap, targetSessions, targetSeconds, progress int) {
+	<div class="sidebar-focus-widget">
+		<h3 class="sidebar-focus-title">FOKUS HARI INI</h3>
+		
+		<div class="focus-stat-item">
+			<div class="focus-stat-icon">🍅</div>
+			<div class="focus-stat-content">
+				<div class="focus-stat-value">
+					<span class="focus-stat-current">
+						if recap != nil {
+							{ fmt.Sprintf("%d", recap.PomodorosCompleted) }
+						} else {
+							0
+						}
+					</span>
+					<span class="focus-stat-target">/{ fmt.Sprintf("%d", targetSessions) }</span>
+				</div>
+				<div class="focus-stat-label">Sesi Selesai</div>
+			</div>
+		</div>
+
+		<div class="focus-stat-item">
+			<div class="focus-stat-icon">⏱️</div>
+			<div class="focus-stat-content">
+				<div class="focus-stat-value">
+					<span class="focus-stat-current focus-stat-current-blue">
+						if recap != nil {
+							{ formatDuration(recap.TotalFocusSeconds) }
+						} else {
+							0m
+						}
+					</span>
+				</div>
+				<div class="focus-stat-label">Waktu Fokus</div>
+			</div>
+		</div>
+
+		<div class="focus-progress-container">
+			<div class="focus-progress-bar">
+				<div class="focus-progress-fill" style={ fmt.Sprintf("width: %d%%", progress) }></div>
+			</div>
+			<div class="focus-progress-text">{ fmt.Sprintf("%d%% dari target harian", progress) }</div>
+		</div>
+	</div>
+}
+
+func formatDuration(seconds int) string {
+	h := seconds / 3600
+	m := (seconds % 3600) / 60
+	if h > 0 {
+		return fmt.Sprintf("%dh %dm", h, m)
+	}
+	return fmt.Sprintf("%dm", m)
+}

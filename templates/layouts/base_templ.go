@@ -161,7 +161,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" id=\"nav-reports\"><span class=\"nav-icon\">⏱️</span> <span>Waktu</span></a></nav><div class=\"sidebar-footer\"><span class=\"text-xs text-muted\">Personal · Private</span></div></aside><!-- Main Content --><main class=\"main-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" id=\"nav-reports\"><span class=\"nav-icon\">⏱️</span> <span>Waktu</span></a></nav><!-- Sidebar Widget loaded via HTMX --><div class=\"sidebar-widget-container\" hx-get=\"/components/sidebar-stats\" hx-trigger=\"load\"><!-- skeleton loader or blank --></div><div class=\"sidebar-footer\"><span class=\"text-xs text-muted\">Personal · Private</span></div></aside><!-- Main Content --><main class=\"main-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

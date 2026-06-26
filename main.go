@@ -71,6 +71,7 @@ func main() {
 
 	// Dashboard
 	mux.HandleFunc("/", dashboardH.Show)
+	mux.HandleFunc("/components/sidebar-stats", dashboardH.SidebarStats)
 
 	// Tasks
 	mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {

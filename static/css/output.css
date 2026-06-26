@@ -1493,3 +1493,247 @@ a { color: inherit; text-decoration: none; }
     font-size: 0.75rem;
     color: var(--color-text-muted);
 }
+
+/* --- Sidebar Widget --- */
+.sidebar-widget-container {
+    margin: 1rem 0;
+    padding: 0 1rem;
+}
+
+.sidebar-focus-widget {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+}
+
+.sidebar-focus-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.focus-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.focus-stat-icon {
+    font-size: 1.25rem;
+}
+
+.focus-stat-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.focus-stat-current {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-danger);
+}
+.focus-stat-current-blue {
+    color: var(--color-primary);
+}
+
+.focus-stat-target {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.focus-stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.focus-progress-container {
+    margin-top: 1.25rem;
+}
+
+.focus-progress-bar {
+    height: 6px;
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.focus-progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.focus-progress-text {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+/* --- Bento Grid --- */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.bento-kanban {
+    grid-column: span 2;
+    grid-row: span 2;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.bento-kanban .kanban-board {
+    margin-top: 1rem;
+    gap: 1rem;
+}
+
+.bento-kanban .kanban-col {
+    background: #F9FAFB;
+    border: none;
+}
+
+.bento-kanban .kanban-list {
+    padding: 0.5rem;
+}
+
+.bento-reports {
+    grid-column: span 1;
+    grid-row: span 1;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+}
+
+.bento-reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.bento-reports-title {
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bento-braindump {
+    grid-column: span 1;
+    grid-row: span 1;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.bento-braindump form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.bento-braindump textarea {
+    flex: 1;
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    resize: none;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.bento-braindump textarea:focus {
+    border-color: var(--color-primary);
+}
+
+.bento-ringkasan {
+    grid-column: span 2;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ringkasan-stats {
+    display: flex;
+    gap: 3rem;
+}
+
+.ringkasan-stat h4 {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+.ringkasan-stat p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+.ringkasan-stat span {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+/* Circular Progress Bar using CSS conic-gradient */
+.circular-progress {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.circular-progress::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    background: white;
+    border-radius: 50%;
+}
+
+.circular-progress-value {
+    position: relative;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+@media (max-width: 1024px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+    }
+    .bento-kanban, .bento-reports, .bento-braindump, .bento-ringkasan {
+        grid-column: span 1;
+        grid-row: auto;
+    }
+}
