@@ -17,12 +17,17 @@ templ Base(title string, page string, user ...string) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<meta name="description" content="Activity Monitor — personal task and note manager"/>
+			<meta name="theme-color" content="#007AFF"/>
+			<link rel="manifest" href="/static/manifest.json"/>
+			<link rel="apple-touch-icon" href="/static/icons/icon-192.png"/>
 			<title>{ title } — Activity Monitor</title>
 			<link rel="preconnect" href="https://fonts.googleapis.com"/>
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 			<link rel="stylesheet" href="/static/css/output.css"/>
-			<script src="/static/js/htmx.min.js"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 		</head>
 		<body class="body-bg min-h-screen font-sans">
 			<!-- Desktop Sidebar -->
@@ -47,6 +52,10 @@ templ Base(title string, page string, user ...string) {
 					<a href="/timeline" class={ "nav-item", navActive(page, "timeline") } id="nav-timeline">
 						<span class="nav-icon">◷</span>
 						<span>Timeline</span>
+					</a>
+					<a href="/reports" class={ "nav-item", navActive(page, "reports") } id="nav-reports">
+						<span class="nav-icon">⏱️</span>
+						<span>Waktu</span>
 					</a>
 				</nav>
 				<div class="sidebar-footer">
@@ -80,6 +89,10 @@ templ Base(title string, page string, user ...string) {
 					<span class="bottom-nav-icon">◷</span>
 					<span class="bottom-nav-label">Timeline</span>
 				</a>
+				<a href="/reports" class={ "bottom-nav-item", navActive(page, "reports") } id="mobile-nav-reports">
+					<span class="bottom-nav-icon">⏱️</span>
+					<span class="bottom-nav-label">Waktu</span>
+				</a>
 			</nav>
 
 			<!-- Modal Container -->
@@ -89,6 +102,13 @@ templ Base(title string, page string, user ...string) {
 			<div id="toast-container" class="toast-container"></div>
 
 			<script>
+				if ('serviceWorker' in navigator) {
+					window.addEventListener('load', () => {
+						navigator.serviceWorker.register('/static/sw.js').catch(err => {
+							console.log('ServiceWorker registration failed: ', err);
+						});
+					});
+				}
 				// Close modal on backdrop click
 				document.body.addEventListener('click', function(e) {
 					if (e.target.classList.contains('modal-backdrop')) {

@@ -132,11 +132,12 @@ func (s *TaskService) Delete(id string) error {
 	return nil
 }
 
-func (s *TaskService) AddSubtask(taskID, title string) (*models.Subtask, error) {
+func (s *TaskService) AddSubtask(taskID, title string, deadline *time.Time) (*models.Subtask, error) {
 	sub := &models.Subtask{
 		ID:        uuid.New().String(),
 		TaskID:    taskID,
 		Title:     title,
+		Deadline:  deadline,
 		CreatedAt: time.Now(),
 	}
 	if err := s.subtasks.Create(sub); err != nil {

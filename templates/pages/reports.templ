@@ -1,0 +1,76 @@
+package pages
+
+import (
+	"fmt"
+	"activity-monitor/templates/layouts"
+	"activity-monitor/internal/models"
+)
+
+templ Reports(logs []models.TimeLogWithDetails) {
+	@layouts.Base("Laporan Waktu", "reports") {
+		<div class="page-container">
+			<div class="page-header">
+				<div>
+					<h1 class="page-title">Laporan Waktu</h1>
+					<p class="page-subtitle">Detail histori waktu fokus kamu (Clockify-style)</p>
+				</div>
+			</div>
+
+			<div class="card">
+				if len(logs) == 0 {
+					<div class="empty-state">
+						<p class="empty-text">Belum ada histori waktu yang tercatat.</p>
+					</div>
+				} else {
+					<div class="table-container">
+						<table class="report-table">
+							<thead>
+								<tr>
+									<th>Task / Subtask</th>
+									<th>Mulai</th>
+									<th>Selesai</th>
+									<th>Durasi</th>
+									<th>Tipe</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, log := range logs {
+									<tr>
+										<td>
+											<div class="report-task-name">
+												if log.TaskTitle != "" {
+													<span class="main-task">{ log.TaskTitle }</span>
+												}
+												if log.SubtaskTitle != "" {
+													<span class="sub-task">↳ { log.SubtaskTitle }</span>
+												}
+											</div>
+										</td>
+										<td>{ log.StartTime.Format("02 Jan, 15:04") }</td>
+										<td>
+											if log.EndTime != nil {
+												{ log.EndTime.Format("15:04") }
+											} else {
+												<span class="status-badge status-inprogress">Berjalan</span>
+											}
+										</td>
+										<td class="tabular-nums">
+											if log.DurationSeconds > 0 {
+												{ fmt.Sprintf("%dm %ds", log.DurationSeconds / 60, log.DurationSeconds % 60) }
+											} else {
+												-
+											}
+										</td>
+										<td>
+											<span class="report-badge">{ log.SessionType }</span>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}

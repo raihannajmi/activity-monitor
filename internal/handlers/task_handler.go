@@ -206,7 +206,14 @@ func (h *TaskHandler) AddSubtask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := h.tasks.AddSubtask(taskID, title); err != nil {
+	var deadline *time.Time
+	if dlStr := r.FormValue("deadline"); dlStr != "" {
+		if t, err := time.Parse("2006-01-02", dlStr); err == nil {
+			deadline = &t
+		}
+	}
+
+	if _, err := h.tasks.AddSubtask(taskID, title, deadline); err != nil {
 		h.sendError(w, r, "Gagal menambahkan subtask", http.StatusInternalServerError)
 		return
 	}

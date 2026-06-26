@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS subtasks (
     task_id      TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
     title        TEXT NOT NULL,
     is_completed INTEGER DEFAULT 0,
+    deadline     DATETIME,
     created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

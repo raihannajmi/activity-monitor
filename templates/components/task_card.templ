@@ -129,14 +129,23 @@ templ SubtaskList(task models.Task) {
 			class="subtask-add-form"
 			id={ fmt.Sprintf("subtask-form-%s", task.ID) }
 		>
-			<input
-				type="text"
-				name="title"
-				placeholder="+ Tambah subtask..."
-				class="subtask-input"
-				id={ fmt.Sprintf("subtask-input-%s", task.ID) }
-				autocomplete="off"
-			/>
+			<div class="subtask-input-group">
+				<input
+					type="text"
+					name="title"
+					placeholder="+ Tambah subtask..."
+					class="subtask-input"
+					id={ fmt.Sprintf("subtask-input-%s", task.ID) }
+					autocomplete="off"
+				/>
+				<input
+					type="date"
+					name="deadline"
+					class="subtask-date-input"
+					title="Deadline Subtask"
+				/>
+				<button type="submit" class="btn-sm btn-primary" style="display:none;">Add</button>
+			</div>
 		</form>
 	</div>
 }
@@ -156,10 +165,17 @@ templ SubtaskItem(sub models.Subtask, taskID string) {
 				○
 			}
 		</button>
-		<span class="subtask-title">{ sub.Title }</span>
-		if sub.TotalTimeSpent > 0 {
-			<span class="subtask-time">⏱️ { fmt.Sprintf("%dm", sub.TotalTimeSpent / 60) }</span>
-		}
+		<div class="subtask-content-group">
+			<span class="subtask-title">{ sub.Title }</span>
+			<div class="subtask-meta">
+				if sub.Deadline != nil {
+					<span class="subtask-deadline" title="Deadline">◷ { sub.Deadline.Format("02 Jan") }</span>
+				}
+				if sub.TotalTimeSpent > 0 {
+					<span class="subtask-time">⏱️ { fmt.Sprintf("%dm", sub.TotalTimeSpent / 60) }</span>
+				}
+			</div>
+		</div>
 		<div class="subtask-actions">
 			if !sub.IsCompleted {
 				<button

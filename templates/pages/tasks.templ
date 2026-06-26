@@ -9,10 +9,10 @@ import (
 
 templ Tasks(tasks []models.Task, filter string) {
 	@layouts.Base("Tasks", "tasks") {
-		<div class="page-container">
+		<div class="page-container kanban-page">
 			<div class="page-header">
 				<div>
-					<h1 class="page-title">Tasks</h1>
+					<h1 class="page-title">Tasks Board</h1>
 					<p class="page-subtitle">Kelola semua pekerjaan kamu</p>
 				</div>
 				<button
@@ -24,53 +24,90 @@ templ Tasks(tasks []models.Task, filter string) {
 				>+ Task Baru</button>
 			</div>
 
-			<!-- Filter Tabs -->
-			<div class="filter-tabs">
-				<a
-					href="/tasks"
-					class={ "filter-tab", templ.KV("filter-tab-active", filter == "" || filter == "all") }
-					id="filter-all"
-				>Semua</a>
-				<a
-					href="/tasks?filter=todo"
-					class={ "filter-tab", templ.KV("filter-tab-active", filter == "todo") }
-					id="filter-todo"
-				>Todo</a>
-				<a
-					href="/tasks?filter=in_progress"
-					class={ "filter-tab", templ.KV("filter-tab-active", filter == "in_progress") }
-					id="filter-progress"
-				>Sedang Dikerjakan</a>
-				<a
-					href="/tasks?filter=done"
-					class={ "filter-tab", templ.KV("filter-tab-active", filter == "done") }
-					id="filter-done"
-				>Selesai</a>
-			</div>
+			<!-- Kanban Board -->
+			<div class="kanban-board">
+				<!-- Todo Column -->
+				<div class="kanban-col">
+					<div class="kanban-col-header">
+						<span class="kanban-col-title">Todo</span>
+						<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusTodo)) }</span>
+					</div>
+					<div class="kanban-list" id="col-todo" data-status="todo">
+						for _, task := range filterTasks(tasks, models.StatusTodo) {
+							@components.TaskCard(task)
+						}
+					</div>
+				</div>
 
-			<!-- Task List -->
-			if len(tasks) == 0 {
-				<div class="empty-state empty-state-lg" id="task-list">
-					<div class="empty-icon">◻</div>
-					<p class="empty-title">Belum ada task</p>
-					<p class="empty-text">Buat task pertama kamu untuk mulai produktif</p>
-					<button
-						class="btn btn-primary"
-						hx-get="/tasks/new"
-						hx-target="#modal-container"
-						hx-swap="innerHTML"
-						id="empty-new-task-btn"
-					>+ Buat Task Baru</button>
+				<!-- In Progress Column -->
+				<div class="kanban-col">
+					<div class="kanban-col-header">
+						<span class="kanban-col-title">Sedang Dikerjakan</span>
+						<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusInProgress)) }</span>
+					</div>
+					<div class="kanban-list" id="col-in_progress" data-status="in_progress">
+						for _, task := range filterTasks(tasks, models.StatusInProgress) {
+							@components.TaskCard(task)
+						}
+					</div>
 				</div>
-			} else {
-				<div class="task-list" id="task-list">
-					for _, task := range tasks {
-						@components.TaskCard(task)
-					}
+
+				<!-- Done Column -->
+				<div class="kanban-col">
+					<div class="kanban-col-header">
+						<span class="kanban-col-title">Selesai</span>
+						<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusDone)) }</span>
+					</div>
+					<div class="kanban-list" id="col-done" data-status="done">
+						for _, task := range filterTasks(tasks, models.StatusDone) {
+							@components.TaskCard(task)
+						}
+					</div>
 				</div>
-			}
+			</div>
 		</div>
+
+		<script>
+			// Initialize SortableJS for each column
+			document.addEventListener("DOMContentLoaded", function() {
+				var columns = document.querySelectorAll('.kanban-list');
+				columns.forEach(function(col) {
+					new Sortable(col, {
+						group: 'kanban', // set both lists to same group
+						animation: 150,
+						ghostClass: 'kanban-ghost',
+						onEnd: function (evt) {
+							var itemEl = evt.item;  // dragged HTMLElement
+							var toList = evt.to;    // target list
+							
+							var newStatus = toList.getAttribute('data-status');
+							var taskId = itemEl.id.replace('task-', '');
+							
+							// Trigger HTMX request to update status
+							htmx.ajax('PUT', '/tasks/' + taskId + '/status', {
+								values: { status: newStatus },
+								swap: 'none' // Don't swap to prevent jumping, let HTMX handle backend state
+							});
+						},
+					});
+				});
+			});
+		</script>
 	}
+}
+
+func filterTasks(tasks []models.Task, status models.Status) []models.Task {
+	var filtered []models.Task
+	for _, t := range tasks {
+		if t.Status == status {
+			filtered = append(filtered, t)
+		}
+	}
+	return filtered
+}
+
+func countTasks(tasks []models.Task, status models.Status) int {
+	return len(filterTasks(tasks, status))
 }
 
 templ TaskDetail(task models.Task) {

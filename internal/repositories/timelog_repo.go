@@ -88,3 +88,19 @@ func (r *TimeLogRepository) GetDailyRecap(date time.Time) (*models.DailyRecap, e
 	err := r.db.QueryRow(query, startOfDay, endOfDay).Scan(&recap.PomodorosCompleted, &recap.TotalFocusSeconds)
 	return &recap, err
 }
+
+func (r *TimeLogRepository) ListAllWithDetails() ([]models.TimeLogWithDetails, error) {
+	query := `
+		SELECT 
+			tl.id, tl.task_id, tl.subtask_id, tl.start_time, tl.end_time, tl.duration_seconds, tl.session_type,
+			COALESCE(t.title, '') as task_title,
+			COALESCE(s.title, '') as subtask_title
+		FROM time_logs tl
+		LEFT JOIN tasks t ON tl.task_id = t.id
+		LEFT JOIN subtasks s ON tl.subtask_id = s.id
+		ORDER BY tl.start_time DESC
+	`
+	var logs []models.TimeLogWithDetails
+	err := r.db.Select(&logs, query)
+	return logs, err
+}

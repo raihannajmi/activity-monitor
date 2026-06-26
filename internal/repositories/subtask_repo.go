@@ -15,19 +15,18 @@ func NewSubtaskRepository(db *sqlx.DB) *SubtaskRepository {
 }
 
 func (r *SubtaskRepository) ListByTaskID(taskID string) ([]models.Subtask, error) {
-	var subtasks []models.Subtask
-	err := r.db.Select(&subtasks, `
-		SELECT id, task_id, title, is_completed, created_at
-		FROM subtasks WHERE task_id = ? ORDER BY created_at ASC
-	`, taskID)
-	return subtasks, err
+	var subs []models.Subtask
+	query := `SELECT id, task_id, title, is_completed, deadline, created_at FROM subtasks WHERE task_id = ? ORDER BY created_at ASC`
+	err := r.db.Select(&subs, query, taskID)
+	return subs, err
 }
 
-func (r *SubtaskRepository) Create(s *models.Subtask) error {
-	_, err := r.db.Exec(`
-		INSERT INTO subtasks (id, task_id, title, is_completed, created_at)
-		VALUES (?, ?, ?, ?, ?)
-	`, s.ID, s.TaskID, s.Title, s.IsCompleted, s.CreatedAt)
+func (r *SubtaskRepository) Create(sub *models.Subtask) error {
+	query := `
+		INSERT INTO subtasks (id, task_id, title, is_completed, deadline, created_at)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+	_, err := r.db.Exec(query, sub.ID, sub.TaskID, sub.Title, sub.IsCompleted, sub.Deadline, sub.CreatedAt)
 	return err
 }
 

@@ -38,3 +38,7 @@ func (s *TimeLogService) GetActiveSession() (*models.TimeLog, error) {
 func (s *TimeLogService) GetDailyRecap(date time.Time) (*models.DailyRecap, error) {
 	return s.timelogs.GetDailyRecap(date)
 }
+
+func (s *TimeLogService) ListAllWithDetails() ([]models.TimeLogWithDetails, error) {
+	return s.timelogs.ListAllWithDetails()
+}

@@ -56,6 +56,7 @@ func main() {
 	timelineH := handlers.NewTimelineHandler(activitySvc)
 	reminderH := handlers.NewReminderHandler(reminderSvc)
 	timerH := handlers.NewTimerHandler(timelogSvc)
+	reportH := handlers.NewReportHandler(timelogSvc)
 
 	mux := http.NewServeMux()
 
@@ -143,6 +144,9 @@ func main() {
 
 	// Timeline
 	mux.HandleFunc("/timeline", timelineH.Show)
+
+	// Reports
+	mux.HandleFunc("/reports", reportH.Show)
 
 	// Timer
 	mux.HandleFunc("/timer/start", func(w http.ResponseWriter, r *http.Request) {
