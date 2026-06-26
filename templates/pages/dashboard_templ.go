@@ -22,7 +22,7 @@ type DashboardData struct {
 	TodayReminders int
 	TasksDueToday  []models.Task
 	Reminders      []models.Reminder
-	RecentActivity []models.Activity
+	DailyRecap     *models.DailyRecap
 }
 
 func Dashboard(data DashboardData) templ.Component {
@@ -116,27 +116,29 @@ func Dashboard(data DashboardData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</section><!-- Recent Activity --><section class=\"section\"><div class=\"section-header\"><h2 class=\"section-title\">Aktivitas Terbaru</h2><a href=\"/timeline\" class=\"section-link\">Lihat Semua →</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</section><!-- Daily Recap Focus --><section class=\"section\"><div class=\"section-header\"><h2 class=\"section-title\">Rekap Fokus Hari Ini</h2></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if len(data.RecentActivity) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"empty-state\"><p class=\"empty-text\">Belum ada aktivitas</p></div>")
+			if data.DailyRecap == nil || (data.DailyRecap.PomodorosCompleted == 0 && data.DailyRecap.TotalFocusSeconds == 0) {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"empty-state\"><p class=\"empty-text\">Belum ada sesi fokus hari ini. Mulai kerjakan task-mu!</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"activity-list\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"stats-grid\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				for _, a := range data.RecentActivity {
-					templ_7745c5c3_Err = components.ActivityItem(a).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
+				templ_7745c5c3_Err = components.StatsCard("Sesi Selesai", data.DailyRecap.PomodorosCompleted, "🍅", "stats-red").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div>")
+				templ_7745c5c3_Err = components.StatsCard("Waktu Fokus", data.DailyRecap.TotalFocusSeconds/60, "⏱️", "stats-blue").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- Menit --></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

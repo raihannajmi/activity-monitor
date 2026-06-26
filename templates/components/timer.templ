@@ -1,0 +1,107 @@
+package components
+
+templ TimerWidget() {
+	<div id="pomodoro-widget" class="pomodoro-widget hidden">
+		<div class="pomodoro-header">
+			<span id="pomodoro-task-title" class="pomodoro-title">Fokus Task</span>
+			<button class="btn-icon btn-sm pomodoro-minimize" onclick="document.getElementById('pomodoro-widget').classList.toggle('minimized')">_</button>
+		</div>
+		<div class="pomodoro-body">
+			<div id="pomodoro-time" class="pomodoro-time">25:00</div>
+			<div class="pomodoro-controls">
+				<button id="pomodoro-btn-play" class="btn-icon btn-primary btn-pomodoro" onclick="togglePomodoro()">▶</button>
+				<button id="pomodoro-btn-stop" class="btn-icon btn-danger btn-pomodoro" onclick="stopPomodoro()">■</button>
+			</div>
+		</div>
+
+		<!-- Hidden form for HTMX sync -->
+		<form id="pomodoro-sync-form" hx-post="/timer/stop" hx-swap="none" style="display:none;">
+			<input type="hidden" id="pomodoro-input-duration" name="duration_seconds" value="0"/>
+		</form>
+	</div>
+
+	<script>
+		let pomodoroInterval;
+		let pomodoroSecondsLeft = 25 * 60;
+		let pomodoroIsRunning = false;
+		let pomodoroSessionId = null;
+		let totalSecondsElapsed = 0;
+
+		function updatePomodoroDisplay() {
+			const display = document.getElementById('pomodoro-time');
+			if (!display) return;
+			const m = Math.floor(pomodoroSecondsLeft / 60).toString().padStart(2, '0');
+			const s = (pomodoroSecondsLeft % 60).toString().padStart(2, '0');
+			display.innerText = `${m}:${s}`;
+		}
+
+		function togglePomodoro() {
+			const btn = document.getElementById('pomodoro-btn-play');
+			if (pomodoroIsRunning) {
+				clearInterval(pomodoroInterval);
+				pomodoroIsRunning = false;
+				btn.innerText = "▶";
+			} else {
+				pomodoroIsRunning = true;
+				btn.innerText = "⏸";
+				pomodoroInterval = setInterval(() => {
+					if (pomodoroSecondsLeft > 0) {
+						pomodoroSecondsLeft--;
+						totalSecondsElapsed++;
+						updatePomodoroDisplay();
+					} else {
+						clearInterval(pomodoroInterval);
+						pomodoroIsRunning = false;
+						btn.innerText = "▶";
+						alert("Waktu fokus selesai! Bagus sekali.");
+						stopPomodoro(); // auto save
+					}
+				}, 1000);
+			}
+		}
+
+		function stopPomodoro() {
+			clearInterval(pomodoroInterval);
+			pomodoroIsRunning = false;
+			
+			// Set duration and submit via HTMX
+			document.getElementById('pomodoro-input-duration').value = totalSecondsElapsed;
+			
+			// We only submit if we actually have an active session from server side
+			// Since HTMX manages the actual request, we will trigger it manually
+			if (pomodoroSessionId) {
+				const form = document.getElementById('pomodoro-sync-form');
+				form.action = `/timer/${pomodoroSessionId}/stop`;
+				htmx.trigger(form, 'submit');
+			}
+			
+			document.getElementById('pomodoro-widget').classList.add('hidden');
+			pomodoroSessionId = null;
+			totalSecondsElapsed = 0;
+			pomodoroSecondsLeft = 25 * 60;
+			document.getElementById('pomodoro-btn-play').innerText = "▶";
+		}
+
+		// Listen for HTMX events from the server
+		document.body.addEventListener("timerStarted", function(evt) {
+			const data = evt.detail; // JSON payload from HX-Trigger
+			pomodoroSessionId = data.id;
+			
+			// Reset timer
+			clearInterval(pomodoroInterval);
+			pomodoroSecondsLeft = 25 * 60;
+			totalSecondsElapsed = 0;
+			updatePomodoroDisplay();
+			
+			// Show widget
+			const widget = document.getElementById('pomodoro-widget');
+			widget.classList.remove('hidden');
+			widget.classList.remove('minimized');
+			
+			// Auto start
+			if (!pomodoroIsRunning) {
+				togglePomodoro();
+			}
+		});
+	</script>
+}

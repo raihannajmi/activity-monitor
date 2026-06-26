@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"activity-monitor/internal/services"
 	"activity-monitor/templates/pages"
@@ -11,10 +12,11 @@ type DashboardHandler struct {
 	tasks      *services.TaskService
 	reminders  *services.ReminderService
 	activities *services.ActivityService
+	timelogs   *services.TimeLogService
 }
 
-func NewDashboardHandler(tasks *services.TaskService, reminders *services.ReminderService, activities *services.ActivityService) *DashboardHandler {
-	return &DashboardHandler{tasks, reminders, activities}
+func NewDashboardHandler(tasks *services.TaskService, reminders *services.ReminderService, activities *services.ActivityService, timelogs *services.TimeLogService) *DashboardHandler {
+	return &DashboardHandler{tasks, reminders, activities, timelogs}
 }
 
 func (h *DashboardHandler) Show(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +34,9 @@ func (h *DashboardHandler) Show(w http.ResponseWriter, r *http.Request) {
 	todayReminders, _ := h.reminders.CountToday()
 	tasksDueToday, _ := h.tasks.ListDueTodayWithSubtasks()
 	reminders, _ := h.reminders.ListToday()
-	recent, _ := h.activities.ListRecent()
+	
+	// Get daily recap instead of recent activity
+	recap, _ := h.timelogs.GetDailyRecap(time.Now())
 
 	data := pages.DashboardData{
 		ActiveTasks:    active,
@@ -41,7 +45,7 @@ func (h *DashboardHandler) Show(w http.ResponseWriter, r *http.Request) {
 		TodayReminders: todayReminders,
 		TasksDueToday:  tasksDueToday,
 		Reminders:      reminders,
-		RecentActivity: recent,
+		DailyRecap:     recap,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

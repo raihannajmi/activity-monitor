@@ -1,5 +1,7 @@
 package layouts
 
+import "activity-monitor/templates/components"
+
 
 func navActive(current, page string) string {
 	if current == page {
@@ -56,6 +58,9 @@ templ Base(title string, page string, user ...string) {
 			<main class="main-content">
 				{ children... }
 			</main>
+
+			<!-- Pomodoro Widget -->
+			@components.TimerWidget()
 
 			<!-- Mobile Bottom Navigation -->
 			<nav class="bottom-nav">

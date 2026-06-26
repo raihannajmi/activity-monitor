@@ -15,6 +15,7 @@ type TaskService struct {
 	subtasks   *repositories.SubtaskRepository
 	reminders  *repositories.ReminderRepository
 	activities *repositories.ActivityRepository
+	timelogs   *repositories.TimeLogRepository
 }
 
 func NewTaskService(
@@ -22,8 +23,9 @@ func NewTaskService(
 	subtasks *repositories.SubtaskRepository,
 	reminders *repositories.ReminderRepository,
 	activities *repositories.ActivityRepository,
+	timelogs *repositories.TimeLogRepository,
 ) *TaskService {
-	return &TaskService{tasks, subtasks, reminders, activities}
+	return &TaskService{tasks, subtasks, reminders, activities, timelogs}
 }
 
 func (s *TaskService) ListByStatus(status string) ([]models.Task, error) {
@@ -31,7 +33,14 @@ func (s *TaskService) ListByStatus(status string) ([]models.Task, error) {
 }
 
 func (s *TaskService) GetSubtasks(taskID string) ([]models.Subtask, error) {
-	return s.subtasks.ListByTaskID(taskID)
+	subs, err := s.subtasks.ListByTaskID(taskID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range subs {
+		subs[i].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForSubtask(subs[i].ID)
+	}
+	return subs, nil
 }
 
 func (s *TaskService) ListAll() ([]models.Task, error) {
@@ -44,7 +53,12 @@ func (s *TaskService) ListWithSubtasks() ([]models.Task, error) {
 		return nil, err
 	}
 	for i := range tasks {
-		tasks[i].Subtasks, _ = s.subtasks.ListByTaskID(tasks[i].ID)
+		subs, _ := s.subtasks.ListByTaskID(tasks[i].ID)
+		for j := range subs {
+			subs[j].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForSubtask(subs[j].ID)
+		}
+		tasks[i].Subtasks = subs
+		tasks[i].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForTask(tasks[i].ID)
 	}
 	return tasks, nil
 }
@@ -54,8 +68,13 @@ func (s *TaskService) GetWithDetails(id string) (*models.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	task.Subtasks, _ = s.subtasks.ListByTaskID(id)
+	subs, _ := s.subtasks.ListByTaskID(id)
+	for j := range subs {
+		subs[j].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForSubtask(subs[j].ID)
+	}
+	task.Subtasks = subs
 	task.Reminders, _ = s.reminders.ListByTaskID(id)
+	task.TotalTimeSpent, _ = s.timelogs.GetTotalTimeForTask(id)
 	return task, nil
 }
 
@@ -65,7 +84,12 @@ func (s *TaskService) ListDueTodayWithSubtasks() ([]models.Task, error) {
 		return nil, err
 	}
 	for i := range tasks {
-		tasks[i].Subtasks, _ = s.subtasks.ListByTaskID(tasks[i].ID)
+		subs, _ := s.subtasks.ListByTaskID(tasks[i].ID)
+		for j := range subs {
+			subs[j].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForSubtask(subs[j].ID)
+		}
+		tasks[i].Subtasks = subs
+		tasks[i].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForTask(tasks[i].ID)
 	}
 	return tasks, nil
 }

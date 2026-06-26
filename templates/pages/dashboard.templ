@@ -14,7 +14,7 @@ type DashboardData struct {
 	TodayReminders int
 	TasksDueToday  []models.Task
 	Reminders      []models.Reminder
-	RecentActivity []models.Activity
+	DailyRecap     *models.DailyRecap
 }
 
 templ Dashboard(data DashboardData) {
@@ -72,21 +72,19 @@ templ Dashboard(data DashboardData) {
 						}
 					</section>
 
-					<!-- Recent Activity -->
+					<!-- Daily Recap Focus -->
 					<section class="section">
 						<div class="section-header">
-							<h2 class="section-title">Aktivitas Terbaru</h2>
-							<a href="/timeline" class="section-link">Lihat Semua →</a>
+							<h2 class="section-title">Rekap Fokus Hari Ini</h2>
 						</div>
-						if len(data.RecentActivity) == 0 {
+						if data.DailyRecap == nil || (data.DailyRecap.PomodorosCompleted == 0 && data.DailyRecap.TotalFocusSeconds == 0) {
 							<div class="empty-state">
-								<p class="empty-text">Belum ada aktivitas</p>
+								<p class="empty-text">Belum ada sesi fokus hari ini. Mulai kerjakan task-mu!</p>
 							</div>
 						} else {
-							<div class="activity-list">
-								for _, a := range data.RecentActivity {
-									@components.ActivityItem(a)
-								}
+							<div class="stats-grid">
+								@components.StatsCard("Sesi Selesai", data.DailyRecap.PomodorosCompleted, "🍅", "stats-red")
+								@components.StatsCard("Waktu Fokus", data.DailyRecap.TotalFocusSeconds / 60, "⏱️", "stats-blue") <!-- Menit -->
 							</div>
 						}
 					</section>

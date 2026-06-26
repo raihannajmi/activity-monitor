@@ -45,3 +45,15 @@ CREATE TABLE IF NOT EXISTS activities (
 CREATE INDEX IF NOT EXISTS idx_subtasks_task_id ON subtasks(task_id);
 CREATE INDEX IF NOT EXISTS idx_reminders_remind_at ON reminders(remind_at);
 CREATE INDEX IF NOT EXISTS idx_activities_created_at ON activities(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS time_logs (
+    id               TEXT PRIMARY KEY,
+    task_id          TEXT REFERENCES tasks(id) ON DELETE CASCADE,
+    subtask_id       TEXT REFERENCES subtasks(id) ON DELETE CASCADE,
+    start_time       DATETIME NOT NULL,
+    end_time         DATETIME,
+    duration_seconds INTEGER DEFAULT 0,
+    session_type     TEXT DEFAULT 'pomodoro'
+);
+
+CREATE INDEX IF NOT EXISTS idx_time_logs_task_id ON time_logs(task_id);

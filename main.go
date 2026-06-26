@@ -40,19 +40,22 @@ func main() {
 	reminderRepo := repositories.NewReminderRepository(db)
 	noteRepo := repositories.NewNoteRepository(db)
 	activityRepo := repositories.NewActivityRepository(db)
+	timelogRepo := repositories.NewTimeLogRepository(db)
 
 	// Services
-	taskSvc := services.NewTaskService(taskRepo, subtaskRepo, reminderRepo, activityRepo)
+	taskSvc := services.NewTaskService(taskRepo, subtaskRepo, reminderRepo, activityRepo, timelogRepo)
 	noteSvc := services.NewNoteService(noteRepo, activityRepo)
 	reminderSvc := services.NewReminderService(reminderRepo, taskRepo, activityRepo)
 	activitySvc := services.NewActivityService(activityRepo)
+	timelogSvc := services.NewTimeLogService(timelogRepo)
 
 	// Handlers
-	dashboardH := handlers.NewDashboardHandler(taskSvc, reminderSvc, activitySvc)
+	dashboardH := handlers.NewDashboardHandler(taskSvc, reminderSvc, activitySvc, timelogSvc)
 	taskH := handlers.NewTaskHandler(taskSvc, reminderSvc)
 	noteH := handlers.NewNoteHandler(noteSvc)
 	timelineH := handlers.NewTimelineHandler(activitySvc)
 	reminderH := handlers.NewReminderHandler(reminderSvc)
+	timerH := handlers.NewTimerHandler(timelogSvc)
 
 	mux := http.NewServeMux()
 
@@ -140,6 +143,18 @@ func main() {
 
 	// Timeline
 	mux.HandleFunc("/timeline", timelineH.Show)
+
+	// Timer
+	mux.HandleFunc("/timer/start", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			timerH.Start(w, r)
+		}
+	})
+	mux.HandleFunc("/timer/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/stop") && r.Method == http.MethodPost {
+			timerH.Stop(w, r)
+		}
+	})
 
 	// Reminders
 	mux.HandleFunc("/reminders/", func(w http.ResponseWriter, r *http.Request) {

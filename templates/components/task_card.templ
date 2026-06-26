@@ -18,6 +18,9 @@ templ TaskCard(task models.Task) {
 				if task.IsOverdue() {
 					<span class="status-badge status-overdue">Terlambat</span>
 				}
+				if task.TotalTimeSpent > 0 {
+					<span class="status-badge status-time" title="Waktu dihabiskan">⏱️ { fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }</span>
+				}
 			</div>
 			<div class="task-card-actions">
 				<button
@@ -57,6 +60,15 @@ templ TaskCard(task models.Task) {
 				<span class="task-deadline">◷ { task.Deadline.Format("02 Jan 2006") }</span>
 			}
 			<div class="task-status-actions">
+				if task.Status != models.StatusDone {
+					<button
+						class="btn-sm btn-secondary btn-focus"
+						hx-post="/timer/start"
+						hx-vals={ fmt.Sprintf(`{"task_id":"%s", "session_type":"pomodoro"}`, task.ID) }
+						hx-swap="none"
+						title="Mulai Fokus"
+					>▶ Fokus</button>
+				}
 				if task.Status != models.StatusInProgress && task.Status != models.StatusDone {
 					<button
 						class="btn-sm btn-secondary"
@@ -145,12 +157,26 @@ templ SubtaskItem(sub models.Subtask, taskID string) {
 			}
 		</button>
 		<span class="subtask-title">{ sub.Title }</span>
-		<button
-			class="btn-icon btn-danger subtask-delete"
-			hx-delete={ fmt.Sprintf("/tasks/%s/subtasks/%s", taskID, sub.ID) }
-			hx-target={ fmt.Sprintf("#subtask-%s", sub.ID) }
-			hx-swap="outerHTML swap:0.2s"
-			id={ fmt.Sprintf("delete-subtask-%s", sub.ID) }
-		>✕</button>
+		if sub.TotalTimeSpent > 0 {
+			<span class="subtask-time">⏱️ { fmt.Sprintf("%dm", sub.TotalTimeSpent / 60) }</span>
+		}
+		<div class="subtask-actions">
+			if !sub.IsCompleted {
+				<button
+					class="btn-icon btn-focus"
+					hx-post="/timer/start"
+					hx-vals={ fmt.Sprintf(`{"task_id":"%s", "subtask_id":"%s", "session_type":"pomodoro"}`, taskID, sub.ID) }
+					hx-swap="none"
+					title="Fokus Subtask"
+				>▶</button>
+			}
+			<button
+				class="btn-icon btn-danger subtask-delete"
+				hx-delete={ fmt.Sprintf("/tasks/%s/subtasks/%s", taskID, sub.ID) }
+				hx-target={ fmt.Sprintf("#subtask-%s", sub.ID) }
+				hx-swap="outerHTML swap:0.2s"
+				id={ fmt.Sprintf("delete-subtask-%s", sub.ID) }
+			>✕</button>
+		</div>
 	</div>
 }

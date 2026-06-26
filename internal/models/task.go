@@ -26,8 +26,9 @@ type Task struct {
 	UpdatedAt   time.Time  `db:"updated_at"`
 
 	// Populated on demand
-	Subtasks  []Subtask  `db:"-"`
-	Reminders []Reminder `db:"-"`
+	Subtasks       []Subtask  `db:"-"`
+	Reminders      []Reminder `db:"-"`
+	TotalTimeSpent int        `db:"-"` // in seconds
 }
 
 func (t *Task) SubtaskProgress() (int, int) {

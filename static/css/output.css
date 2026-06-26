@@ -1221,3 +1221,107 @@ a { color: inherit; text-decoration: none; }
 .toast-close:hover {
   color: var(--color-text);
 }
+
+/* --- Pomodoro Widget --- */
+.pomodoro-widget {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 1.25rem;
+    width: 240px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.pomodoro-widget.minimized {
+    height: 48px;
+    padding: 0.5rem 1rem;
+    overflow: hidden;
+}
+
+.pomodoro-widget.hidden {
+    display: none;
+}
+
+.pomodoro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.pomodoro-widget.minimized .pomodoro-header {
+    margin-bottom: 0;
+}
+
+.pomodoro-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+.pomodoro-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pomodoro-time {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
+    line-height: 1;
+}
+
+.pomodoro-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-pomodoro {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subtask-time, .status-time {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+/* UI Cleanup: Hover States */
+.task-card-actions {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-card:hover .task-card-actions {
+    opacity: 1;
+}
+
+.subtask-delete, .btn-focus {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.subtask-item:hover .subtask-delete,
+.subtask-item:hover .btn-focus {
+    opacity: 1;
+}
+
+.subtask-actions {
+    display: flex;
+    gap: 4px;
+}
