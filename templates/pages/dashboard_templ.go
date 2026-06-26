@@ -60,7 +60,7 @@ func Dashboard(data DashboardData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\"><div class=\"page-header\" style=\"display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;\"><div><p style=\"margin: 0; font-size: 0.875rem; font-weight: 500;\">Hai! 👋</p><h1 class=\"page-title\" style=\"margin: 0.25rem 0; font-size: 1.75rem;\">Selamat datang kembali!</h1><p class=\"page-subtitle\">Mari fokus dan selesaikan hal-hal penting hari ini.</p></div><div style=\"display: flex; gap: 1rem; align-items: center;\"><div class=\"date-badge\" style=\"background: white; border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;\"><span style=\"color: var(--color-text-muted);\">📅</span> <span>Hari Ini</span></div><button class=\"btn btn-primary\" hx-get=\"/tasks/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" id=\"new-task-btn\">+ Task Baru</button></div></div><!-- Stats Row --><div class=\"stats-grid\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\"><div class=\"page-header\" style=\"display: flex; justify-content: space-between; align-items: flex-start;\"><div><p style=\"margin: 0; font-size: 0.875rem; font-weight: 500;\">Hai! 👋</p><h1 class=\"page-title\" style=\"margin: 0 0 0.25rem 0; font-size: 1.5rem;\">Selamat datang kembali!</h1><p class=\"page-subtitle\" style=\"margin: 0; font-size: 0.875rem;\">Mari fokus dan selesaikan hal-hal penting hari ini.</p></div><div style=\"display: flex; gap: 1rem; align-items: center;\"><div class=\"date-badge\" style=\"background: white; border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;\"><span style=\"color: var(--color-text-muted);\">📅</span> <span>Hari Ini</span></div><button class=\"btn btn-primary\" hx-get=\"/tasks/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" id=\"new-task-btn\">+ Task Baru</button></div></div><!-- Stats Row --><div class=\"stats-grid\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -80,14 +80,14 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Bento Grid --><div class=\"bento-grid\"><!-- Kanban Board Widget --><div class=\"bento-kanban\"><div class=\"section-header\" style=\"margin-bottom: 0;\"><h2 class=\"section-title\" style=\"display: flex; align-items: center; gap: 0.5rem;\"><span style=\"color: var(--color-primary);\">📋</span> Tasks Board</h2><p class=\"page-subtitle\" style=\"margin: 0.25rem 0 0 1.75rem; font-size: 0.75rem;\">Kelola semua pekerjaan kamu</p></div><div class=\"kanban-board\" style=\"display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; flex: 1; margin-top: 1rem;\"><!-- Todo Column --><div class=\"kanban-col\"><div class=\"kanban-header\"><h2 class=\"kanban-title\">To Do</h2><span class=\"kanban-count\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Bento Grid --><div class=\"bento-grid\"><!-- Kanban Board Widget --><div class=\"bento-kanban\"><div class=\"section-header\" style=\"margin-bottom: 0;\"><h2 class=\"section-title\" style=\"display: flex; align-items: center; gap: 0.5rem;\"><span style=\"color: var(--color-primary);\">📋</span> Tasks Board</h2><p class=\"page-subtitle\" style=\"margin: 0.25rem 0 0 1.75rem; font-size: 0.75rem;\">Kelola semua pekerjaan kamu</p></div><div class=\"kanban-board\" style=\"display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; flex: 1; margin-top: 0.5rem;\"><!-- Todo Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">To Do</h2><span class=\"kanban-col-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 70, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 70, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -105,14 +105,14 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><!-- In Progress Column --><div class=\"kanban-col\"><div class=\"kanban-header\"><h2 class=\"kanban-title\">Sedang Dikerjakan</h2><span class=\"kanban-count\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><!-- In Progress Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">Sedang Dikerjakan</h2><span class=\"kanban-col-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 85, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 85, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -130,14 +130,14 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><!-- Done Column --><div class=\"kanban-col\"><div class=\"kanban-header\"><h2 class=\"kanban-title\">Selesai</h2><span class=\"kanban-count\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><!-- Done Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">Selesai</h2><span class=\"kanban-col-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countStatus(data.AllTasks, "done")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 100, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 100, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
