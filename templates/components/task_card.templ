@@ -83,7 +83,7 @@ templ TaskCard(task models.Task) {
 				}
 				if task.Status == models.StatusInProgress {
 					<button
-						class="btn-sm btn-success"
+						class="btn-sm btn-primary"
 						hx-put={ fmt.Sprintf("/tasks/%s/status", task.ID) }
 						hx-vals={ fmt.Sprintf(`{"status":"done"}`) }
 						hx-target={ fmt.Sprintf("#task-%s", task.ID) }
