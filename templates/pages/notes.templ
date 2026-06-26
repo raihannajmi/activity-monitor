@@ -6,40 +6,46 @@ import (
 	"activity-monitor/internal/models"
 )
 
+templ NewNoteBtn() {
+	<button
+		class="btn btn-primary"
+		hx-get="/notes/new"
+		hx-target="#modal-container"
+		hx-swap="innerHTML"
+		id="new-note-btn"
+		style="display: flex; align-items: center; gap: 8px;"
+	><i data-lucide="plus" style="width: 18px; height: 18px;"></i> Catatan Baru</button>
+}
+
+templ SearchNoteInput(query string) {
+	<div class="search-bar" style="height: 32px; border-radius: 6px;">
+		<i data-lucide="search" style="width: 14px; height: 14px; color: var(--color-text-secondary); margin-left: 8px;"></i>
+		<input
+			type="search"
+			id="notes-search"
+			name="q"
+			class="search-input"
+			placeholder="Cari catatan..."
+			value={ query }
+			hx-get="/notes/search"
+			hx-trigger="keyup changed delay:350ms, search"
+			hx-target="#notes-list"
+			hx-swap="outerHTML"
+			autocomplete="off"
+			style="height: 100%; font-size: 13px;"
+		/>
+	</div>
+}
+
 templ Notes(notes []models.Note, query string) {
 	@layouts.Base("Brain Dump", "notes") {
 		<div class="page-container">
-			<div class="page-header">
-				<div>
-					<h1 class="page-title">Brain Dump</h1>
-					<p class="page-subtitle">Tulis apa saja yang ada di pikiranmu</p>
-				</div>
-				<button
-					class="btn btn-primary"
-					hx-get="/notes/new"
-					hx-target="#modal-container"
-					hx-swap="innerHTML"
-					id="new-note-btn"
-				>+ Catatan Baru</button>
-			</div>
-
-			<!-- Search -->
-			<div class="search-bar">
-				<span class="search-icon">⌕</span>
-				<input
-					type="search"
-					id="notes-search"
-					name="q"
-					class="search-input"
-					placeholder="Cari catatan..."
-					value={ query }
-					hx-get="/notes/search"
-					hx-trigger="keyup changed delay:350ms, search"
-					hx-target="#notes-list"
-					hx-swap="outerHTML"
-					autocomplete="off"
-				/>
-			</div>
+			@components.PageHeader(
+				"Brain Dump",
+				"Tulis apa saja yang ada di pikiranmu",
+				NewNoteBtn(),
+			)
+			@components.PageToolbar(SearchNoteInput(query))
 
 			<!-- Notes Grid -->
 			@NotesList(notes)
@@ -50,8 +56,8 @@ templ Notes(notes []models.Note, query string) {
 templ NotesList(notes []models.Note) {
 	if len(notes) == 0 {
 		<div class="empty-state empty-state-lg" id="notes-list">
-			<div class="empty-icon">✐</div>
-			<p class="empty-title">Belum ada catatan</p>
+			<i data-lucide="brain-circuit" style="width: 48px; height: 48px; color: var(--color-text-secondary); margin-bottom: 16px;"></i>
+			<h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-primary);">Belum ada catatan</h3>
 			<p class="empty-text">Mulai tulis ide atau pikiranmu di sini</p>
 		</div>
 	} else {

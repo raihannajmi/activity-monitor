@@ -1,0 +1,38 @@
+package components
+
+templ PageHeader(title string, subtitle string, actionBtn templ.Component) {
+	<div class="page-header">
+		<div class="header-left">
+			<div>
+				<h1 class="page-title">{ title }</h1>
+				if subtitle != "" {
+					<p class="page-subtitle">{ subtitle }</p>
+				}
+			</div>
+		</div>
+		<div class="header-right">
+			<div class="header-actions" style="display: flex; gap: 16px; align-items: center;">
+				<button class="btn-icon" aria-label="Search"><i data-lucide="search"></i></button>
+				<button class="btn-icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+				if actionBtn != nil {
+					@actionBtn
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ PageToolbar(children ...templ.Component) {
+	<div class="page-toolbar">
+		<div class="toolbar-group">
+			<button class="btn-ghost" style="display: flex; gap: 8px; align-items: center;"><i data-lucide="filter" style="width: 16px; height: 16px;"></i> Filter</button>
+			<button class="btn-ghost" style="display: flex; gap: 8px; align-items: center;"><i data-lucide="arrow-up-down" style="width: 16px; height: 16px;"></i> Sort</button>
+			<button class="btn-ghost" style="display: flex; gap: 8px; align-items: center;"><i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> View</button>
+		</div>
+		<div class="toolbar-group">
+			for _, child := range children {
+				@child
+			}
+		</div>
+	</div>
+}

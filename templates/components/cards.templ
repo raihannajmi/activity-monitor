@@ -10,23 +10,9 @@ templ NoteCard(note models.Note) {
 		<div class="note-card-header">
 			<h3 class="note-title">{ note.Title }</h3>
 			<div class="note-actions">
-				<button
-					class="btn-icon"
-					hx-get={ fmt.Sprintf("/notes/%s/edit", note.ID) }
-					hx-target="#modal-container"
-					hx-swap="innerHTML"
-					title="Edit catatan"
-					id={ fmt.Sprintf("edit-note-%s", note.ID) }
-				>✎</button>
-				<button
-					class="btn-icon btn-danger"
-					hx-delete={ fmt.Sprintf("/notes/%s", note.ID) }
-					hx-target={ fmt.Sprintf("#note-%s", note.ID) }
-					hx-swap="outerHTML swap:0.3s"
-					hx-confirm="Hapus catatan ini?"
-					title="Hapus catatan"
-					id={ fmt.Sprintf("delete-note-%s", note.ID) }
-				>✕</button>
+				<button class="btn-icon" title="Edit catatan" hx-get={ fmt.Sprintf("/notes/%s/edit", note.ID) } hx-target="#modal-container" hx-swap="innerHTML">
+					<i data-lucide="more-horizontal" style="width: 16px; height: 16px;"></i>
+				</button>
 			</div>
 		</div>
 		if note.Content != "" {
@@ -90,9 +76,11 @@ templ ActivityItem(a models.Activity) {
 	</div>
 }
 
-templ StatsCard(label string, value int, icon string, color string) {
+templ StatsCard(label string, value int, icon templ.Component, color string) {
 	<div class={ "stats-card", color }>
-		<div class="stats-icon">{ icon }</div>
+		<div class="stats-icon">
+			@icon
+		</div>
 		<div class="stats-info">
 			<div class="stats-value">{ fmt.Sprintf("%d", value) }</div>
 			<div class="stats-label">{ label }</div>

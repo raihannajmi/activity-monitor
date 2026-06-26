@@ -3,23 +3,26 @@ package pages
 import (
 	"fmt"
 	"activity-monitor/templates/layouts"
+	"activity-monitor/templates/components"
 	"activity-monitor/internal/models"
 )
 
 templ Reports(logs []models.TimeLogWithDetails) {
 	@layouts.Base("Laporan Waktu", "reports") {
 		<div class="page-container">
-			<div class="page-header">
-				<div>
-					<h1 class="page-title">Laporan Waktu</h1>
-					<p class="page-subtitle">Detail histori waktu fokus kamu (Clockify-style)</p>
-				</div>
-			</div>
+			@components.PageHeader(
+				"Time Tracker",
+				"Histori waktu kerja dan estimasi fokus",
+				nil,
+			)
+			@components.PageToolbar()
 
 			<div class="card">
 				if len(logs) == 0 {
 					<div class="empty-state">
-						<p class="empty-text">Belum ada histori waktu yang tercatat.</p>
+						<i data-lucide="clock-3" style="width: 48px; height: 48px; color: var(--color-text-secondary); margin-bottom: 16px;"></i>
+						<h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-primary);">Belum ada histori waktu</h3>
+						<p class="empty-text">Mulai tracker di dalam halaman Tasks untuk merekam waktu.</p>
 					</div>
 				} else {
 					<div class="table-container">

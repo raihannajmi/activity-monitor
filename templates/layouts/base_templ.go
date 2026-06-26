@@ -51,7 +51,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — Activity Monitor</title><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://unpkg.com/htmx.org/dist/ext/response-targets.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js\"></script></head><body class=\"body-bg min-h-screen font-sans\"><!-- Desktop Sidebar --><aside class=\"sidebar\"><div class=\"sidebar-brand\"><div class=\"brand-icon\">A</div><span class=\"brand-name\">Activity Monitor</span></div><nav class=\"sidebar-nav\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — Activity Monitor</title><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://unpkg.com/htmx.org/dist/ext/response-targets.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js\"></script><script src=\"https://unpkg.com/lucide@latest\"></script></head><body class=\"body-bg min-h-screen font-sans\"><!-- Desktop Sidebar --><aside class=\"sidebar\"><div class=\"sidebar-brand\"><div class=\"brand-icon\">A</div><span class=\"brand-name\">Activity Monitor</span></div><nav class=\"sidebar-nav\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -73,7 +73,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" id=\"nav-dashboard\"><span class=\"nav-icon\">⊡</span> <span>Dashboard</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" id=\"nav-dashboard\"><i data-lucide=\"layout-dashboard\" class=\"nav-icon\"></i> <span>Dashboard</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +95,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" id=\"nav-tasks\"><span class=\"nav-icon\">◻</span> <span>Tasks</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" id=\"nav-tasks\"><i data-lucide=\"square-kanban\" class=\"nav-icon\"></i> <span>Tasks</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,7 +117,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" id=\"nav-notes\"><span class=\"nav-icon\">✐</span> <span>Brain Dump</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" id=\"nav-notes\"><i data-lucide=\"brain-circuit\" class=\"nav-icon\"></i> <span>Brain Dump</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -139,7 +139,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" id=\"nav-timeline\"><span class=\"nav-icon\">◷</span> <span>Timeline</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" id=\"nav-timeline\"><i data-lucide=\"calendar\" class=\"nav-icon\"></i> <span>Timeline</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -161,7 +161,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" id=\"nav-reports\"><span class=\"nav-icon\">⏱️</span> <span>Waktu</span></a></nav><!-- Sidebar Widget loaded via HTMX --><div class=\"sidebar-widget-container\" hx-get=\"/components/sidebar-stats\" hx-trigger=\"load\"><!-- skeleton loader or blank --></div><div class=\"sidebar-footer\"><span class=\"text-xs text-muted\">Personal · Private</span></div></aside><!-- Main Content --><main class=\"main-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" id=\"nav-reports\"><i data-lucide=\"clock-3\" class=\"nav-icon\"></i> <span>Waktu</span></a></nav><!-- Sidebar Widget loaded via HTMX --><div class=\"sidebar-widget-container\" hx-get=\"/components/sidebar-stats\" hx-trigger=\"load\"><!-- skeleton loader or blank --></div><div class=\"sidebar-footer\"><span class=\"text-xs text-muted\">Personal · Private</span></div></aside><!-- Main Content --><main class=\"main-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,7 +199,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" id=\"mobile-nav-dashboard\"><span class=\"bottom-nav-icon\">⊡</span> <span class=\"bottom-nav-label\">Dashboard</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" id=\"mobile-nav-dashboard\"><i data-lucide=\"layout-dashboard\" class=\"bottom-nav-icon\"></i> <span class=\"bottom-nav-label\">Dashboard</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -221,7 +221,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" id=\"mobile-nav-tasks\"><span class=\"bottom-nav-icon\">◻</span> <span class=\"bottom-nav-label\">Tasks</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" id=\"mobile-nav-tasks\"><i data-lucide=\"square-kanban\" class=\"bottom-nav-icon\"></i> <span class=\"bottom-nav-label\">Tasks</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -243,7 +243,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" id=\"mobile-nav-notes\"><span class=\"bottom-nav-icon\">✐</span> <span class=\"bottom-nav-label\">Catatan</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" id=\"mobile-nav-notes\"><i data-lucide=\"brain-circuit\" class=\"bottom-nav-icon\"></i> <span class=\"bottom-nav-label\">Catatan</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -265,7 +265,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" id=\"mobile-nav-timeline\"><span class=\"bottom-nav-icon\">◷</span> <span class=\"bottom-nav-label\">Timeline</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" id=\"mobile-nav-timeline\"><i data-lucide=\"calendar\" class=\"bottom-nav-icon\"></i> <span class=\"bottom-nav-label\">Timeline</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -287,7 +287,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" id=\"mobile-nav-reports\"><span class=\"bottom-nav-icon\">⏱️</span> <span class=\"bottom-nav-label\">Waktu</span></a></nav><!-- Modal Container --><div id=\"modal-container\"></div><!-- Toast Notifications --><div id=\"toast-container\" class=\"toast-container\"></div><script>\n\t\t\t\tif ('serviceWorker' in navigator) {\n\t\t\t\t\twindow.addEventListener('load', () => {\n\t\t\t\t\t\tnavigator.serviceWorker.register('/static/sw.js').catch(err => {\n\t\t\t\t\t\t\tconsole.log('ServiceWorker registration failed: ', err);\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t\t// Close modal on backdrop click\n\t\t\t\tdocument.body.addEventListener('click', function(e) {\n\t\t\t\t\tif (e.target.classList.contains('modal-backdrop')) {\n\t\t\t\t\t\tdocument.getElementById('modal-container').innerHTML = '';\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\t// HTMX after request - scroll to top on page swap\n\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(e) {\n\t\t\t\t\tif (e.detail.target.id === 'main-content') {\n\t\t\t\t\t\twindow.scrollTo(0, 0);\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" id=\"mobile-nav-reports\"><i data-lucide=\"clock-3\" class=\"bottom-nav-icon\"></i> <span class=\"bottom-nav-label\">Waktu</span></a></nav><!-- Modal Container --><div id=\"modal-container\"></div><!-- Toast Notifications --><div id=\"toast-container\" class=\"toast-container\"></div><script>\n\t\t\t\tif ('serviceWorker' in navigator) {\n\t\t\t\t\twindow.addEventListener('load', () => {\n\t\t\t\t\t\tnavigator.serviceWorker.register('/static/sw.js').catch(err => {\n\t\t\t\t\t\t\tconsole.log('ServiceWorker registration failed: ', err);\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t\t// Close modal on backdrop click\n\t\t\t\tdocument.body.addEventListener('click', function(e) {\n\t\t\t\t\tif (e.target.classList.contains('modal-backdrop')) {\n\t\t\t\t\t\tdocument.getElementById('modal-container').innerHTML = '';\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\t// HTMX after request - scroll to top on page swap\n\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(e) {\n\t\t\t\t\tif (e.detail.target.id === 'main-content') {\n\t\t\t\t\t\twindow.scrollTo(0, 0);\n\t\t\t\t\t}\n\t\t\t\t\tlucide.createIcons();\n\t\t\t\t});\n\t\t\t\t\n\t\t\t\t// Init icons on load\n\t\t\t\tdocument.addEventListener('DOMContentLoaded', () => {\n\t\t\t\t\tlucide.createIcons();\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

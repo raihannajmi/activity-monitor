@@ -9,37 +9,29 @@ templ TaskCard(task models.Task) {
 	<div class="card task-card" id={ fmt.Sprintf("task-%s", task.ID) }>
 		<div class="task-card-header">
 			<div class="task-card-meta">
-				<span class={ "priority-badge", task.PriorityColor() }>{ task.PriorityLabel() }</span>
+				<span class={ "priority-badge", task.PriorityColor() }>
+					if task.Priority == "high" {
+						<i data-lucide="arrow-up" style="width: 14px; height: 14px;"></i>
+					} else if task.Priority == "medium" {
+						<i data-lucide="minus" style="width: 14px; height: 14px;"></i>
+					} else {
+						<i data-lucide="arrow-down" style="width: 14px; height: 14px;"></i>
+					}
+					{ task.PriorityLabel() }
+				</span>
 				if task.Status == models.StatusDone {
-					<span class="status-badge status-done">Selesai</span>
+					<span class="status-badge status-done"><i data-lucide="circle-check" style="width: 12px; height: 12px;"></i> Selesai</span>
 				} else if task.Status == models.StatusInProgress {
-					<span class="status-badge status-inprogress">Sedang Dikerjakan</span>
+					<span class="status-badge status-inprogress"><i data-lucide="clock-3" style="width: 12px; height: 12px;"></i> Sedang Dikerjakan</span>
 				}
 				if task.IsOverdue() {
-					<span class="status-badge status-overdue">Terlambat</span>
-				}
-				if task.TotalTimeSpent > 0 {
-					<span class="status-badge status-time" title="Waktu dihabiskan">⏱️ { fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }</span>
+					<span class="status-badge status-overdue"><i data-lucide="alert-circle" style="width: 12px; height: 12px;"></i> Terlambat</span>
 				}
 			</div>
 			<div class="task-card-actions">
-				<button
-					class="btn-icon"
-					hx-get={ fmt.Sprintf("/tasks/%s/edit", task.ID) }
-					hx-target="#modal-container"
-					hx-swap="innerHTML"
-					title="Edit task"
-					id={ fmt.Sprintf("edit-task-%s", task.ID) }
-				>✎</button>
-				<button
-					class="btn-icon btn-danger"
-					hx-delete={ fmt.Sprintf("/tasks/%s", task.ID) }
-					hx-target={ fmt.Sprintf("#task-%s", task.ID) }
-					hx-swap="outerHTML swap:0.3s"
-					hx-confirm="Hapus task ini?"
-					title="Hapus task"
-					id={ fmt.Sprintf("delete-task-%s", task.ID) }
-				>✕</button>
+				<button class="btn-icon" title="Edit task" hx-get={ fmt.Sprintf("/tasks/%s/edit", task.ID) } hx-target="#modal-container" hx-swap="innerHTML">
+					<i data-lucide="more-horizontal" style="width: 16px; height: 16px;"></i>
+				</button>
 			</div>
 		</div>
 
@@ -56,38 +48,47 @@ templ TaskCard(task models.Task) {
 		}
 
 		<div class="task-card-footer">
-			if task.Deadline != nil {
-				<span class="task-deadline">◷ { task.Deadline.Format("02 Jan 2006") }</span>
-			}
+			<div style="display: flex; gap: 12px; align-items: center;">
+				if task.Deadline != nil {
+					<span class="task-deadline" style="display: flex; align-items: center; gap: 4px;">
+						<i data-lucide="calendar" style="width: 12px; height: 12px;"></i>
+						{ task.Deadline.Format("02 Jan") }
+					</span>
+				}
+				if task.TotalTimeSpent > 0 {
+					<span class="status-badge status-time" style="display: flex; align-items: center; gap: 4px;" title="Waktu dihabiskan">
+						<i data-lucide="timer" style="width: 12px; height: 12px;"></i>
+						{ fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }
+					</span>
+				}
+			</div>
 			<div class="task-status-actions">
 				if task.Status != models.StatusDone {
 					<button
-						class="btn-sm btn-secondary btn-focus"
+						class="btn-sm btn-ghost btn-focus"
 						hx-post="/timer/start"
 						hx-vals={ fmt.Sprintf(`{"task_id":"%s", "session_type":"pomodoro"}`, task.ID) }
 						hx-swap="none"
 						title="Mulai Fokus"
-					>▶ Fokus</button>
+					><i data-lucide="play" style="width: 14px; height: 14px;"></i> Fokus</button>
 				}
 				if task.Status != models.StatusInProgress && task.Status != models.StatusDone {
 					<button
-						class="btn-sm btn-secondary"
+						class="btn-sm btn-primary"
 						hx-put={ fmt.Sprintf("/tasks/%s/status", task.ID) }
 						hx-vals={ fmt.Sprintf(`{"status":"in_progress"}`) }
 						hx-target={ fmt.Sprintf("#task-%s", task.ID) }
 						hx-swap="outerHTML"
-						id={ fmt.Sprintf("start-task-%s", task.ID) }
 					>Mulai</button>
 				}
-				if task.Status != models.StatusDone {
+				if task.Status == models.StatusInProgress {
 					<button
-						class="btn-sm btn-primary"
+						class="btn-sm btn-success"
 						hx-put={ fmt.Sprintf("/tasks/%s/status", task.ID) }
 						hx-vals={ fmt.Sprintf(`{"status":"done"}`) }
 						hx-target={ fmt.Sprintf("#task-%s", task.ID) }
 						hx-swap="outerHTML"
-						id={ fmt.Sprintf("done-task-%s", task.ID) }
-					>Selesai</button>
+					><i data-lucide="circle-check" style="width: 14px; height: 14px;"></i> Selesai</button>
 				}
 			</div>
 		</div>

@@ -28,6 +28,7 @@ templ Base(title string, page string, user ...string) {
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+			<script src="https://unpkg.com/lucide@latest"></script>
 		</head>
 		<body class="body-bg min-h-screen font-sans">
 			<!-- Desktop Sidebar -->
@@ -38,23 +39,23 @@ templ Base(title string, page string, user ...string) {
 				</div>
 				<nav class="sidebar-nav">
 					<a href="/" class={ "nav-item", navActive(page, "dashboard") } id="nav-dashboard">
-						<span class="nav-icon">⊡</span>
+						<i data-lucide="layout-dashboard" class="nav-icon"></i>
 						<span>Dashboard</span>
 					</a>
 					<a href="/tasks" class={ "nav-item", navActive(page, "tasks") } id="nav-tasks">
-						<span class="nav-icon">◻</span>
+						<i data-lucide="square-kanban" class="nav-icon"></i>
 						<span>Tasks</span>
 					</a>
 					<a href="/notes" class={ "nav-item", navActive(page, "notes") } id="nav-notes">
-						<span class="nav-icon">✐</span>
+						<i data-lucide="brain-circuit" class="nav-icon"></i>
 						<span>Brain Dump</span>
 					</a>
 					<a href="/timeline" class={ "nav-item", navActive(page, "timeline") } id="nav-timeline">
-						<span class="nav-icon">◷</span>
+						<i data-lucide="calendar" class="nav-icon"></i>
 						<span>Timeline</span>
 					</a>
 					<a href="/reports" class={ "nav-item", navActive(page, "reports") } id="nav-reports">
-						<span class="nav-icon">⏱️</span>
+						<i data-lucide="clock-3" class="nav-icon"></i>
 						<span>Waktu</span>
 					</a>
 				</nav>
@@ -80,23 +81,23 @@ templ Base(title string, page string, user ...string) {
 			<!-- Mobile Bottom Navigation -->
 			<nav class="bottom-nav">
 				<a href="/" class={ "bottom-nav-item", navActive(page, "dashboard") } id="mobile-nav-dashboard">
-					<span class="bottom-nav-icon">⊡</span>
+					<i data-lucide="layout-dashboard" class="bottom-nav-icon"></i>
 					<span class="bottom-nav-label">Dashboard</span>
 				</a>
 				<a href="/tasks" class={ "bottom-nav-item", navActive(page, "tasks") } id="mobile-nav-tasks">
-					<span class="bottom-nav-icon">◻</span>
+					<i data-lucide="square-kanban" class="bottom-nav-icon"></i>
 					<span class="bottom-nav-label">Tasks</span>
 				</a>
 				<a href="/notes" class={ "bottom-nav-item", navActive(page, "notes") } id="mobile-nav-notes">
-					<span class="bottom-nav-icon">✐</span>
+					<i data-lucide="brain-circuit" class="bottom-nav-icon"></i>
 					<span class="bottom-nav-label">Catatan</span>
 				</a>
 				<a href="/timeline" class={ "bottom-nav-item", navActive(page, "timeline") } id="mobile-nav-timeline">
-					<span class="bottom-nav-icon">◷</span>
+					<i data-lucide="calendar" class="bottom-nav-icon"></i>
 					<span class="bottom-nav-label">Timeline</span>
 				</a>
 				<a href="/reports" class={ "bottom-nav-item", navActive(page, "reports") } id="mobile-nav-reports">
-					<span class="bottom-nav-icon">⏱️</span>
+					<i data-lucide="clock-3" class="bottom-nav-icon"></i>
 					<span class="bottom-nav-label">Waktu</span>
 				</a>
 			</nav>
@@ -126,6 +127,12 @@ templ Base(title string, page string, user ...string) {
 					if (e.detail.target.id === 'main-content') {
 						window.scrollTo(0, 0);
 					}
+					lucide.createIcons();
+				});
+				
+				// Init icons on load
+				document.addEventListener('DOMContentLoaded', () => {
+					lucide.createIcons();
 				});
 			</script>
 		</body>

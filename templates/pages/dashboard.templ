@@ -19,36 +19,37 @@ type DashboardData struct {
 	RecentTimeLogs []models.TimeLogWithDetails
 }
 
+templ DashboardIcon(name string) {
+	<i data-lucide={ name } style="width: 20px; height: 20px;"></i>
+}
+
+templ NewTaskBtn() {
+	<button
+		class="btn btn-primary"
+		hx-get="/tasks/new"
+		hx-target="#modal-container"
+		hx-swap="innerHTML"
+		id="new-task-btn"
+		style="display: flex; align-items: center; gap: 8px;"
+	><i data-lucide="plus" style="width: 18px; height: 18px;"></i> Task Baru</button>
+}
+
 templ Dashboard(data DashboardData) {
 	@layouts.Base("Dashboard", "dashboard") {
 		<div class="page-container">
-			<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-				<div>
-					<p style="margin: 0; font-size: 0.875rem; font-weight: 500;">Hai! 👋</p>
-					<h1 class="page-title" style="margin: 0 0 0.25rem 0; font-size: 1.5rem;">Selamat datang kembali!</h1>
-					<p class="page-subtitle" style="margin: 0; font-size: 0.875rem;">Mari fokus dan selesaikan hal-hal penting hari ini.</p>
-				</div>
-				<div style="display: flex; gap: 1rem; align-items: center;">
-					<div class="date-badge" style="background: white; border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
-						<span style="color: var(--color-text-muted);">📅</span> 
-						<span>Hari Ini</span>
-					</div>
-					<button
-						class="btn btn-primary"
-						hx-get="/tasks/new"
-						hx-target="#modal-container"
-						hx-swap="innerHTML"
-						id="new-task-btn"
-					>+ Task Baru</button>
-				</div>
-			</div>
+			@components.PageHeader(
+				"Selamat datang kembali!",
+				"Mari fokus dan selesaikan hal-hal penting hari ini.",
+				NewTaskBtn(),
+			)
+			@components.PageToolbar()
 
 			<!-- Stats Row -->
 			<div class="stats-grid">
-				@components.StatsCard("Task Aktif", data.ActiveTasks, "◻", "stats-blue")
-				@components.StatsCard("Selesai", data.DoneTasks, "✓", "stats-green")
-				@components.StatsCard("Hari Ini", data.TodayTasks, "◷", "stats-orange")
-				@components.StatsCard("Reminder", data.TodayReminders, "◎", "stats-purple")
+				@components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-kanban"), "stats-blue")
+				@components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("circle-check"), "stats-green")
+				@components.StatsCard("Hari Ini", data.TodayTasks, DashboardIcon("clock-3"), "stats-orange")
+				@components.StatsCard("Reminder", data.TodayReminders, DashboardIcon("bell"), "stats-purple")
 			</div>
 
 			<!-- Bento Grid -->
@@ -57,7 +58,7 @@ templ Dashboard(data DashboardData) {
 				<div class="bento-kanban">
 					<div class="section-header" style="margin-bottom: 0;">
 						<h2 class="section-title" style="display: flex; align-items: center; gap: 0.5rem;">
-							<span style="color: var(--color-primary);">📋</span> Tasks Board
+							<i data-lucide="square-kanban" style="width: 20px; height: 20px; color: var(--color-primary);"></i> Tasks Board
 						</h2>
 						<p class="page-subtitle" style="margin: 0.25rem 0 0 1.75rem; font-size: 0.75rem;">Kelola semua pekerjaan kamu</p>
 					</div>
@@ -114,7 +115,7 @@ templ Dashboard(data DashboardData) {
 				<div class="bento-reports">
 					<div class="bento-reports-header">
 						<h2 class="bento-reports-title">
-							<span style="color: var(--color-primary);">⏱️</span> Laporan Waktu
+							<i data-lucide="clock-3" style="width: 20px; height: 20px; color: var(--color-primary);"></i> Laporan Waktu
 						</h2>
 						<a href="/reports" style="font-size: 0.75rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">Lihat Semua</a>
 					</div>
@@ -128,7 +129,7 @@ templ Dashboard(data DashboardData) {
 							for _, log := range data.RecentTimeLogs {
 								<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem;">
 									<div style="display: flex; align-items: center; gap: 0.75rem;">
-										<div style="width: 24px; height: 24px; border-radius: 50%; background: #F3E8FF; color: #9333EA; display: flex; align-items: center; justify-content: center; font-size: 0.65rem;">▶</div>
+										<div style="width: 28px; height: 28px; border-radius: 8px; background: #EEF2FF; color: #4F46E5; display: flex; align-items: center; justify-content: center;"><i data-lucide="play" style="width: 14px; height: 14px;"></i></div>
 										<div>
 											<div style="font-size: 0.875rem; font-weight: 500;">{ log.TaskTitle }</div>
 											<div style="font-size: 0.65rem; color: var(--color-text-muted);">{ log.StartTime.Format("02 Jan, 15:04") }</div>
@@ -154,7 +155,7 @@ templ Dashboard(data DashboardData) {
 				<div class="bento-braindump">
 					<div class="bento-reports-header" style="margin-bottom: 0.5rem;">
 						<h2 class="bento-reports-title">
-							<span style="color: var(--color-primary);">✏️</span> Brain Dump
+							<i data-lucide="brain-circuit" style="width: 20px; height: 20px; color: var(--color-primary);"></i> Brain Dump
 						</h2>
 					</div>
 					<p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0 0 0.5rem 1.75rem;">Catat ide atau hal yang mengganggu pikiranmu</p>

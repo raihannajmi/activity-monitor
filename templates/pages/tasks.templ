@@ -7,21 +7,23 @@ import (
 	"activity-monitor/internal/models"
 )
 
+
+
 templ Tasks(tasks []models.Task, filter string) {
 	@layouts.Base("Tasks", "tasks") {
 		<div class="page-container kanban-page">
-			<div class="page-header">
-				<div>
-					<h1 class="page-title">Tasks Board</h1>
-					<p class="page-subtitle">Kelola semua pekerjaan kamu</p>
-				</div>
-				<button
-					class="btn btn-primary"
-					hx-get="/tasks/new"
-					hx-target="#modal-container"
-					hx-swap="innerHTML"
-					id="new-task-btn"
-				>+ Task Baru</button>
+			@components.PageHeader(
+				"Tasks Board",
+				"Kelola semua pekerjaan kamu",
+				NewTaskBtn(), // Reusing from dashboard for now, or just button directly
+			)
+			@components.PageToolbar()
+
+			<!-- Mobile Segmented Control -->
+			<div class="mobile-kanban-tabs">
+				<button class="kanban-tab active" data-target="col-todo">Todo</button>
+				<button class="kanban-tab" data-target="col-in_progress">Doing</button>
+				<button class="kanban-tab" data-target="col-done">Done</button>
 			</div>
 
 			<!-- Kanban Board -->
@@ -91,6 +93,30 @@ templ Tasks(tasks []models.Task, filter string) {
 						},
 					});
 				});
+
+				// Mobile Segmented Control Logic
+				var tabs = document.querySelectorAll('.kanban-tab');
+				var cols = document.querySelectorAll('.kanban-col');
+				
+				tabs.forEach(function(tab) {
+					tab.addEventListener('click', function() {
+						tabs.forEach(t => t.classList.remove('active'));
+						this.classList.add('active');
+						
+						var targetId = this.getAttribute('data-target');
+						cols.forEach(function(col) {
+							var list = col.querySelector('.kanban-list');
+							if (list.id === targetId) {
+								col.classList.add('mobile-active');
+							} else {
+								col.classList.remove('mobile-active');
+							}
+						});
+					});
+				});
+				
+				// Init first tab
+				if (cols.length > 0) cols[0].classList.add('mobile-active');
 			});
 		</script>
 	}
