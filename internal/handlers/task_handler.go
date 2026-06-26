@@ -105,10 +105,8 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Re-render full task list
-	taskList, _ := h.tasks.ListWithSubtasks()
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	renderTaskList(w, r, taskList)
+	w.Header().Set("HX-Location", r.Header.Get("HX-Current-URL"))
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -141,15 +139,8 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Context-aware update: if edited from Detail Page, refresh to see changes properly
-	if strings.Contains(r.Header.Get("HX-Current-URL"), "/tasks/"+id) {
-		w.Header().Set("HX-Refresh", "true")
-		return
-	}
-
-	taskList, _ := h.tasks.ListWithSubtasks()
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	renderTaskList(w, r, taskList)
+	w.Header().Set("HX-Location", r.Header.Get("HX-Current-URL"))
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *TaskHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
@@ -318,15 +309,6 @@ func (h *TaskHandler) CreateReminder(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect back to task detail
 	http.Redirect(w, r, "/tasks/"+taskID, http.StatusSeeOther)
-}
-
-// Helper: render task list div for HTMX swaps
-func renderTaskList(w http.ResponseWriter, r *http.Request, tasks []models.Task) {
-	w.Write([]byte(`<div class="task-list" id="task-list">`))
-	for _, t := range tasks {
-		components.TaskCard(t).Render(r.Context(), w)
-	}
-	w.Write([]byte(`</div>`))
 }
 
 func extractID(path, prefix string) string {

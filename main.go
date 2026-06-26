@@ -65,10 +65,13 @@ func main() {
 
 	// Tasks
 	mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
+		switch r.Method {
+		case http.MethodGet:
 			taskH.List(w, r)
-		} else if r.Method == http.MethodPost {
+		case http.MethodPost:
 			taskH.Create(w, r)
+		default:
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		}
 	})
 	mux.HandleFunc("/tasks/new", taskH.NewForm)
@@ -104,10 +107,13 @@ func main() {
 
 	// Notes
 	mux.HandleFunc("/notes", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
+		switch r.Method {
+		case http.MethodGet:
 			noteH.List(w, r)
-		} else if r.Method == http.MethodPost {
+		case http.MethodPost:
 			noteH.Create(w, r)
+		default:
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		}
 	})
 	mux.HandleFunc("/notes/new", noteH.NewForm)

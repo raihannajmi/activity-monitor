@@ -73,11 +73,8 @@ func (h *NoteHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retain search state
-	query := h.extractQuery(r)
-	noteList, _ := h.notes.Search(query)
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	pages.NotesList(noteList).Render(r.Context(), w)
+	w.Header().Set("HX-Location", r.Header.Get("HX-Current-URL"))
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *NoteHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -98,11 +95,8 @@ func (h *NoteHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retain search state
-	query := h.extractQuery(r)
-	noteList, _ := h.notes.Search(query)
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	pages.NotesList(noteList).Render(r.Context(), w)
+	w.Header().Set("HX-Location", r.Header.Get("HX-Current-URL"))
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *NoteHandler) Delete(w http.ResponseWriter, r *http.Request) {

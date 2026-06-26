@@ -141,7 +141,7 @@ func Tasks(tasks []models.Task, filter string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(tasks) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"empty-state empty-state-lg\"><div class=\"empty-icon\">◻</div><p class=\"empty-title\">Belum ada task</p><p class=\"empty-text\">Buat task pertama kamu untuk mulai produktif</p><button class=\"btn btn-primary\" hx-get=\"/tasks/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" id=\"empty-new-task-btn\">+ Buat Task Baru</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"empty-state empty-state-lg\" id=\"task-list\"><div class=\"empty-icon\">◻</div><p class=\"empty-title\">Belum ada task</p><p class=\"empty-text\">Buat task pertama kamu untuk mulai produktif</p><button class=\"btn btn-primary\" hx-get=\"/tasks/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" id=\"empty-new-task-btn\">+ Buat Task Baru</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

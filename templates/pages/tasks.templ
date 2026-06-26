@@ -50,7 +50,7 @@ templ Tasks(tasks []models.Task, filter string) {
 
 			<!-- Task List -->
 			if len(tasks) == 0 {
-				<div class="empty-state empty-state-lg">
+				<div class="empty-state empty-state-lg" id="task-list">
 					<div class="empty-icon">◻</div>
 					<p class="empty-title">Belum ada task</p>
 					<p class="empty-text">Buat task pertama kamu untuk mulai produktif</p>

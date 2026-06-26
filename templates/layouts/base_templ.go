@@ -49,7 +49,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — Activity Monitor</title><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2uQ8wOBB9wm5mCpbO8NBGQ1GTm0zMa2uNh\" crossorigin=\"anonymous\"></script></head><body class=\"body-bg min-h-screen font-sans\"><!-- Desktop Sidebar --><aside class=\"sidebar\"><div class=\"sidebar-brand\"><div class=\"brand-icon\">A</div><span class=\"brand-name\">Activity Monitor</span></div><nav class=\"sidebar-nav\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — Activity Monitor</title><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"/static/js/htmx.min.js\"></script></head><body class=\"body-bg min-h-screen font-sans\"><!-- Desktop Sidebar --><aside class=\"sidebar\"><div class=\"sidebar-brand\"><div class=\"brand-icon\">A</div><span class=\"brand-name\">Activity Monitor</span></div><nav class=\"sidebar-nav\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
