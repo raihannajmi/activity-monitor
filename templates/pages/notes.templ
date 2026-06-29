@@ -45,7 +45,7 @@ templ Notes(notes []models.Note, query string) {
 				"Tulis apa saja yang ada di pikiranmu",
 				NewNoteBtn(),
 			)
-			@components.PageToolbar(SearchNoteInput(query))
+			@SearchNoteInput(query)
 
 			<!-- Notes Grid -->
 			@NotesList(notes)

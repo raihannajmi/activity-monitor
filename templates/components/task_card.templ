@@ -2,6 +2,7 @@ package components
 
 import (
 	"fmt"
+	"strings"
 	"activity-monitor/internal/models"
 )
 
@@ -9,16 +10,12 @@ templ TaskCard(task models.Task) {
 	<div class="card task-card" id={ fmt.Sprintf("task-%s", task.ID) } hx-get={ fmt.Sprintf("/tasks/%s/edit", task.ID) } hx-target="#modal-container" hx-swap="innerHTML">
 		<div class="task-card-header">
 			<div class="task-card-badges">
-				<span class={ "task-badge", task.PriorityColor() }>
-					if task.Priority == "high" {
-						<i data-lucide="arrow-up" style="width: 14px; height: 14px; margin-right: 4px;"></i>
-					} else if task.Priority == "medium" {
-						<i data-lucide="minus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
-					} else {
-						<i data-lucide="arrow-down" style="width: 14px; height: 14px; margin-right: 4px;"></i>
-					}
-					{ task.PriorityLabel() }
-				</span>
+				if task.Priority != "" {
+					<span class="task-badge" style="background: #FFFBEB; color: #D97706;">
+						{ strings.ToUpper(string(task.Priority)) }
+					</span>
+				}
+				<span class="task-badge" style="background: #EFF6FF; color: #2563EB;">KANBAN</span>
 			</div>
 		</div>
 
@@ -26,30 +23,27 @@ templ TaskCard(task models.Task) {
 			{ task.Title }
 		</div>
 
-		if task.Description != "" {
-			<p class="task-card-desc">{ task.Description }</p>
-		}
-
-		if len(task.Subtasks) > 0 {
-			@ProgressBar(task)
-		}
-
-		<div class="task-card-footer">
-			<div class="task-footer-info">
-				if task.Deadline != nil {
-					<span style="display: flex; align-items: center; gap: 4px;">
-						<i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
-						{ task.Deadline.Format("02 Jan") }
-					</span>
-				}
-				if task.TotalTimeSpent > 0 {
-					<span style="display: flex; align-items: center; gap: 4px;" title="Waktu dihabiskan">
-						<i data-lucide="timer" style="width: 14px; height: 14px;"></i>
-						{ fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }
-					</span>
+		<div class="task-card-footer" style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px;">
+			<div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary);">
+				if task.Status == "done" {
+					<i data-lucide="check-circle-2" style="width: 14px; height: 14px; color: var(--color-success);"></i>
+					<span style="color: var(--color-success);">Selesai</span>
+				} else {
+					<i data-lucide="circle" style="width: 14px; height: 14px; color: var(--color-text-muted);"></i>
+					if task.Deadline != nil {
+						<span>{ task.Deadline.Format("02 Jan") }</span>
+					} else {
+						<span>Belum ada due date</span>
+					}
 				}
 			</div>
-			<div class="task-assignee">R</div>
+			
+			if task.TotalTimeSpent > 0 {
+				<div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--color-text-secondary);">
+					<i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+					{ fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }
+				</div>
+			}
 		</div>
 	</div>
 }

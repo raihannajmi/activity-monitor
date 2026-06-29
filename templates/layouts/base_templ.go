@@ -51,11 +51,11 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — Activity Monitor</title><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://unpkg.com/htmx.org/dist/ext/response-targets.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js\"></script><script src=\"https://unpkg.com/lucide@latest\"></script></head><body class=\"body-bg min-h-screen font-sans\"><!-- Desktop Sidebar --><aside class=\"sidebar\"><div class=\"sidebar-brand\"><div class=\"brand-icon\">A</div><span class=\"brand-name\">Activity Monitor</span></div><nav class=\"sidebar-nav\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — Activity Monitor</title><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://unpkg.com/htmx.org/dist/ext/response-targets.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js\"></script><script src=\"https://unpkg.com/lucide@latest\"></script></head><body class=\"body-bg min-h-screen font-sans\"><!-- Desktop Sidebar --><aside class=\"sidebar\"><div class=\"sidebar-logo\"><div class=\"logo-icon\">A</div>Activity Monitor</div><nav class=\"sidebar-nav\"><div class=\"nav-label\">MENU</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 = []any{"nav-item", navActive(page, "dashboard")}
+		var templ_7745c5c3_Var3 = []any{"nav-item", templ.KV("active", page == "dashboard")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -77,7 +77,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 = []any{"nav-item", navActive(page, "tasks")}
+		var templ_7745c5c3_Var5 = []any{"nav-item", templ.KV("active", page == "tasks")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -95,16 +95,16 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" id=\"nav-tasks\"><i data-lucide=\"square-kanban\" class=\"nav-icon\"></i> <span>Tasks</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" id=\"nav-tasks\"><i data-lucide=\"check-square\" class=\"nav-icon\"></i> <span>Tasks</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 = []any{"nav-item", navActive(page, "notes")}
+		var templ_7745c5c3_Var7 = []any{"nav-item", templ.KV("active", page == "timeline")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a href=\"/notes\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a href=\"/timeline\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,16 +117,16 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" id=\"nav-notes\"><i data-lucide=\"brain-circuit\" class=\"nav-icon\"></i> <span>Brain Dump</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" id=\"nav-timeline\"><i data-lucide=\"clock\" class=\"nav-icon\"></i> <span>Timeline</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 = []any{"nav-item", navActive(page, "timeline")}
+		var templ_7745c5c3_Var9 = []any{"nav-item", templ.KV("active", page == "reports")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"/timeline\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"/reports\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -139,16 +139,16 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" id=\"nav-timeline\"><i data-lucide=\"calendar\" class=\"nav-icon\"></i> <span>Timeline</span></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" id=\"nav-reports\"><i data-lucide=\"pie-chart\" class=\"nav-icon\"></i> <span>Waktu</span></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var11 = []any{"nav-item", navActive(page, "reports")}
+		var templ_7745c5c3_Var11 = []any{"nav-item", templ.KV("active", page == "notes")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<a href=\"/reports\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<a href=\"/notes\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -161,7 +161,7 @@ func Base(title string, page string, user ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" id=\"nav-reports\"><i data-lucide=\"clock-3\" class=\"nav-icon\"></i> <span>Waktu</span></a></nav><!-- Sidebar Widget loaded via HTMX --><div class=\"sidebar-widget-container\" hx-get=\"/components/sidebar-stats\" hx-trigger=\"load\"><!-- skeleton loader or blank --></div><div class=\"sidebar-footer\"><span class=\"text-xs text-muted\">Personal · Private</span></div></aside><!-- Main Content --><main class=\"main-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" id=\"nav-notes\"><i data-lucide=\"edit-3\" class=\"nav-icon\"></i> <span>Brain Dump</span></a></nav><div style=\"margin-top: auto; display: flex; flex-direction: column; gap: 24px;\"><!-- Fokus Hari Ini Sidebar Widget --><div style=\"background: white; border: 1px solid var(--color-border); border-radius: 12px; padding: 16px;\"><div style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 16px; letter-spacing: 0.5px;\">Fokus Hari Ini</div><div style=\"display: flex; flex-direction: column; gap: 16px;\"><div style=\"display: flex; gap: 12px; align-items: center;\"><div style=\"font-size: 20px;\">🍅</div><div><div style=\"font-size: 14px; font-weight: 700; color: var(--color-danger); line-height: 1;\">0<span style=\"color: var(--color-text-secondary); font-size: 12px; font-weight: 500;\">/5</span></div><div style=\"font-size: 11px; color: var(--color-text-secondary); margin-top: 2px;\">Sesi Selesai</div></div></div><div style=\"display: flex; gap: 12px; align-items: center;\"><div style=\"font-size: 20px; color: var(--color-text-secondary);\">⏱️</div><div><div style=\"font-size: 14px; font-weight: 700; color: var(--color-primary); line-height: 1;\">1h 15m</div><div style=\"font-size: 11px; color: var(--color-text-secondary); margin-top: 2px;\">Waktu Fokus</div></div></div></div><div style=\"margin-top: 16px;\"><div style=\"height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;\"><div style=\"height: 100%; width: 25%; background: var(--color-primary); border-radius: 3px;\"></div></div><div style=\"font-size: 10px; text-align: center; color: var(--color-text-muted); margin-top: 8px;\">25% dari target harian</div></div></div><!-- User / Workspace Dropdown --><div style=\"display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--color-border); cursor: pointer;\"><div style=\"display: flex; align-items: center; gap: 8px;\"><div style=\"width: 24px; height: 24px; background: #374151; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;\">P</div><span style=\"font-size: 13px; font-weight: 500; color: var(--color-text-primary);\">Personal &middot; Private</span></div><i data-lucide=\"chevron-down\" style=\"width: 14px; height: 14px; color: var(--color-text-muted);\"></i></div></div></aside><!-- Main Content --><main class=\"main-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

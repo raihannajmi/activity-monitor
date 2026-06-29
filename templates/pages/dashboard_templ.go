@@ -90,7 +90,7 @@ func NewTaskBtn() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button class=\"btn btn-primary\" hx-get=\"/tasks/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" id=\"new-task-btn\" style=\"display: flex; align-items: center; gap: 8px;\"><i data-lucide=\"plus\" style=\"width: 18px; height: 18px;\"></i> Task Baru</button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button class=\"btn btn-primary\" hx-get=\"/tasks/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" id=\"new-task-btn\" style=\"display: flex; align-items: center; gap: 8px; border-radius: 8px;\"><i data-lucide=\"plus\" style=\"width: 16px; height: 16px;\"></i> Task Baru <i data-lucide=\"chevron-down\" style=\"width: 16px; height: 16px; margin-left: 4px;\"></i></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -143,19 +143,15 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.PageToolbar().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Main Layout 70/30 --><div class=\"page-content-scroll\"><div class=\"dashboard-layout\"><!-- Left Content (70%) --><div class=\"dashboard-main\"><!-- Stats Row --><div class=\"stats-grid\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Main Layout 70/30 --><div class=\"page-content-scroll\"><div style=\"display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;\"><!-- Left Content (70%) --><div style=\"flex: 1 1 60%; min-width: 0; display: flex; flex-direction: column;\"><!-- Stats Row --><div class=\"stats-grid\">")
+			templ_7745c5c3_Err = components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-check"), "stats-blue").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-kanban"), "stats-blue").Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("circle-check"), "stats-green").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("check"), "stats-green").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -167,20 +163,20 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><!-- Kanban Board --><div class=\"kanban-board-container\"><div class=\"kanban-board\"><!-- Todo Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">To Do</h2><span class=\"kanban-col-count\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><!-- Kanban Board --><div class=\"kanban-board-container\" style=\"margin-bottom: 24px;\"><div class=\"section-header\" style=\"margin-bottom: 16px;\"><h2 class=\"section-title\" style=\"display: flex; align-items: center; gap: 8px; font-size: 16px;\"><div style=\"width: 32px; height: 32px; background: #F5F3FF; color: #8B5CF6; border-radius: 8px; display: flex; align-items: center; justify-content: center;\"><i data-lucide=\"square-kanban\" style=\"width: 18px; height: 18px;\"></i></div>Tasks Board</h2><p class=\"page-subtitle\" style=\"margin: 4px 0 0 40px; font-size: 13px;\">Kelola semua pekerjaan kamu</p></div><div class=\"kanban-board\"><!-- Todo Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">To Do</h2><div style=\"display: flex; align-items: center; gap: 8px;\"><span class=\"kanban-col-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 68, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 74, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span></div><div class=\"kanban-list\" id=\"col-todo\" data-status=\"todo\" hx-put=\"/tasks/reorder\" hx-trigger=\"end\" hx-swap=\"none\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> <i data-lucide=\"plus\" style=\"width: 16px; height: 16px; color: var(--color-text-muted);\"></i></div></div><div class=\"kanban-list\" id=\"col-todo\" data-status=\"todo\" hx-put=\"/tasks/reorder\" hx-trigger=\"end\" hx-swap=\"none\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -192,20 +188,26 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div><!-- In Progress Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">Sedang Dikerjakan</h2><span class=\"kanban-col-count\">")
+			if countStatus(data.AllTasks, "todo") == 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div style=\"display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; text-align: center; color: var(--color-text-muted); gap: 12px;\"><i data-lucide=\"inbox\" style=\"width: 48px; height: 48px; opacity: 0.5;\"></i><div style=\"font-size: 13px;\">Belum ada task<br>Klik + untuk menambahkan task</div></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div><!-- In Progress Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">Sedang Dikerjakan</h2><div style=\"display: flex; align-items: center; gap: 8px;\"><span class=\"kanban-col-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 83, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 98, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><div class=\"kanban-list\" id=\"col-inprogress\" data-status=\"in_progress\" hx-put=\"/tasks/reorder\" hx-trigger=\"end\" hx-swap=\"none\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <i data-lucide=\"plus\" style=\"width: 16px; height: 16px; color: var(--color-text-muted);\"></i></div></div><div class=\"kanban-list\" id=\"col-inprogress\" data-status=\"in_progress\" hx-put=\"/tasks/reorder\" hx-trigger=\"end\" hx-swap=\"none\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -217,20 +219,20 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><!-- Done Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">Selesai</h2><span class=\"kanban-col-count\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div><!-- Done Column --><div class=\"kanban-col\"><div class=\"kanban-col-header\"><h2 class=\"kanban-col-title\">Selesai</h2><div style=\"display: flex; align-items: center; gap: 8px;\"><span class=\"kanban-col-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countStatus(data.AllTasks, "done")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 98, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 116, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div><div class=\"kanban-list\" id=\"col-done\" data-status=\"done\" hx-put=\"/tasks/reorder\" hx-trigger=\"end\" hx-swap=\"none\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span> <i data-lucide=\"plus\" style=\"width: 16px; height: 16px; color: var(--color-text-muted);\"></i></div></div><div class=\"kanban-list\" id=\"col-done\" data-status=\"done\" hx-put=\"/tasks/reorder\" hx-trigger=\"end\" hx-swap=\"none\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -242,131 +244,144 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></div></div></div><!-- Right Sidebar (30%) --><div class=\"right-sidebar\"><!-- Laporan Waktu Widget --><div class=\"rs-card\"><div class=\"rs-card-header\"><h2 class=\"rs-card-title\">Laporan Waktu</h2><a href=\"/reports\" style=\"font-size: 13px; color: var(--color-primary); font-weight: 500;\">Lihat Semua</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></div></div></div><!-- Ringkasan Fokus Widget --><div class=\"rs-card ringkasan-fokus-card\"><div><h2 class=\"rs-card-title\"><i data-lucide=\"activity\" style=\"width: 16px; height: 16px; color: var(--color-primary);\"></i> Ringkasan Fokus</h2><div style=\"display: flex; gap: 32px; margin-top: 12px;\"><div><div style=\"font-size: 12px; color: var(--color-text-secondary);\">Sesi Selesai</div><div style=\"font-size: 20px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2;\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if data.DailyRecap != nil {
+				var templ_7745c5c3_Var9 string
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.DailyRecap.PomodorosCompleted))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 142, Col: 67}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "0")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div><div style=\"font-size: 11px; color: var(--color-text-muted);\">dari 5 target</div></div><div><div style=\"font-size: 12px; color: var(--color-text-secondary);\">Waktu Fokus</div><div style=\"font-size: 20px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2;\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if data.DailyRecap != nil {
+				var templ_7745c5c3_Var10 string
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(formatDuration(data.DailyRecap.TotalFocusSeconds))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 153, Col: 63}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "1h 15m")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div><div style=\"font-size: 11px; color: var(--color-text-muted);\">dari 2h target</div></div></div></div><div style=\"display: flex; align-items: center; justify-content: center; position: relative;\"><svg width=\"96\" height=\"96\" viewBox=\"0 0 120 120\"><circle cx=\"60\" cy=\"60\" r=\"50\" fill=\"none\" stroke=\"#E5E7EB\" stroke-width=\"12\"></circle> <circle cx=\"60\" cy=\"60\" r=\"50\" fill=\"none\" stroke=\"#2563EB\" stroke-width=\"12\" stroke-dasharray=\"314\" stroke-dashoffset=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%d", int(314*(1.0-float64(calculateProgress(data.DailyRecap))/100.0))))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 165, Col: 217}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" transform=\"rotate(-90 60 60)\" stroke-linecap=\"round\"></circle></svg><div style=\"position: absolute; font-size: 16px; font-weight: 700; color: var(--color-primary);\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d%%", calculateProgress(data.DailyRecap)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 167, Col: 162}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div></div></div></div><!-- Right Sidebar (30%) --><div class=\"right-sidebar\"><!-- Laporan Waktu Widget --><div class=\"rs-card\"><div class=\"rs-card-header\"><h2 class=\"rs-card-title\">Laporan Waktu</h2><a href=\"/reports\" style=\"font-size: 13px; color: var(--color-primary); font-weight: 500;\">Lihat Semua</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.RecentTimeLogs) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"empty-state empty-state-sm\"><i data-lucide=\"clock\" class=\"empty-icon\"></i><h3 class=\"h3\" style=\"font-size: 14px; margin-bottom: 4px;\">Belum ada waktu terekam</h3><p style=\"font-size: 13px; color: var(--color-text-secondary);\">Mulai tracking task kamu</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"empty-state empty-state-sm\"><i data-lucide=\"clock\" class=\"empty-icon\"></i><h3 class=\"h3\" style=\"font-size: 14px; margin-bottom: 4px;\">Belum ada waktu terekam</h3><p style=\"font-size: 13px; color: var(--color-text-secondary);\">Mulai tracking task kamu</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"time-track-list\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"time-track-list\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, log := range data.RecentTimeLogs {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"time-track-item\"><div class=\"tt-play-icon\"><i data-lucide=\"play\" style=\"width: 16px; height: 16px;\"></i></div><div class=\"tt-info\"><span class=\"tt-name\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"time-track-item\"><div class=\"tt-play-icon\"><i data-lucide=\"play\" style=\"width: 16px; height: 16px;\"></i></div><div class=\"tt-info\"><span class=\"tt-name\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var9 string
-					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(log.TaskTitle)
+					var templ_7745c5c3_Var13 string
+					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(log.TaskTitle)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 133, Col: 49}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 193, Col: 49}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span class=\"tt-date\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var10 string
-					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(log.StartTime.Format("02 Jan, 15:04"))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 134, Col: 73}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</span> <span class=\"tt-date\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span></div><div class=\"tt-duration\">")
+					var templ_7745c5c3_Var14 string
+					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(log.StartTime.Format("02 Jan, 15:04"))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 194, Col: 73}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span></div><div class=\"tt-duration\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if log.DurationSeconds > 0 {
-						var templ_7745c5c3_Var11 string
-						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%dm %ds", log.DurationSeconds/60, log.DurationSeconds%60))
+						var templ_7745c5c3_Var15 string
+						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%dm %ds", log.DurationSeconds/60, log.DurationSeconds%60))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 138, Col: 89}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 198, Col: 89}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "-")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "-")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div><!-- Focus Card --><div class=\"rs-card\"><h2 class=\"rs-card-title\">Target Pomodoro</h2><div style=\"display: flex; align-items: flex-end; gap: 8px;\"><span class=\"focus-pomodoro\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if data.DailyRecap != nil {
-				var templ_7745c5c3_Var12 string
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.DailyRecap.PomodorosCompleted))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 155, Col: 65}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "0")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</span> <span style=\"font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 6px;\">/ 5 sesi</span></div><div class=\"focus-progress\"><div class=\"focus-progress-bar\" style=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %d%%", calculateProgress(data.DailyRecap)))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 163, Col: 110}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\"></div></div><div style=\"font-size: 13px; color: var(--color-text-secondary); font-weight: 500;\">Waktu fokus:  ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if data.DailyRecap != nil {
-				var templ_7745c5c3_Var14 string
-				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(formatDuration(data.DailyRecap.TotalFocusSeconds))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 168, Col: 60}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "0h 0m")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div></div><!-- Brain Dump Widget --><div class=\"rs-card\"><div class=\"rs-card-header\"><h2 class=\"rs-card-title\">Brain Dump</h2></div><form hx-post=\"/notes\" hx-swap=\"none\" hx-on::after-request=\"this.reset()\" style=\"display: flex; flex-direction: column; gap: 12px;\"><textarea name=\"content\" class=\"brain-dump-textarea\" placeholder=\"Tulis apa saja yang ada di pikiranmu...\" required></textarea><div style=\"display: flex; justify-content: space-between; align-items: center;\"><span style=\"font-size: 12px; color: var(--color-text-secondary);\">Hanya kamu yang bisa melihat ini</span> <button type=\"submit\" class=\"btn btn-primary\" style=\"height: 36px; padding: 0 16px; border-radius: 8px; font-size: 13px;\">Simpan</button></div></form></div></div></div></div><!-- Include Sortable JS inside dashboard to make Kanban work --><script>\n\t\t\t\tif (typeof Sortable !== 'undefined') {\n\t\t\t\t\tinitSortable();\n\t\t\t\t} else {\n\t\t\t\t\t// Fallback if Sortable is loaded later\n\t\t\t\t\tdocument.addEventListener('DOMContentLoaded', initSortable);\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\tfunction initSortable() {\n\t\t\t\t\tvar cols = document.querySelectorAll('.kanban-list');\n\t\t\t\t\tcols.forEach(function(col) {\n\t\t\t\t\t\tnew Sortable(col, {\n\t\t\t\t\t\t\tgroup: 'shared',\n\t\t\t\t\t\t\tanimation: 150,\n\t\t\t\t\t\t\tghostClass: 'sortable-ghost',\n\t\t\t\t\t\t\tonEnd: function (evt) {\n\t\t\t\t\t\t\t\tvar itemEl = evt.item;\n\t\t\t\t\t\t\t\tvar toCol = evt.to;\n\t\t\t\t\t\t\t\tvar newStatus = toCol.getAttribute('data-status');\n\t\t\t\t\t\t\t\tvar taskId = itemEl.getAttribute('data-task-id');\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t// Trigger HTMX request to update status if needed\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div><!-- End Laporan Waktu Widget --><!-- Brain Dump Widget --><div class=\"rs-card\"><div class=\"rs-card-header\"><h2 class=\"rs-card-title\">Brain Dump</h2></div><form hx-post=\"/notes\" hx-swap=\"none\" hx-on::after-request=\"this.reset()\" style=\"display: flex; flex-direction: column; gap: 12px;\"><textarea name=\"content\" class=\"brain-dump-textarea\" placeholder=\"Tulis apa saja yang ada di pikiranmu...\" required></textarea><div style=\"display: flex; justify-content: space-between; align-items: center;\"><span style=\"font-size: 12px; color: var(--color-text-secondary);\">Hanya kamu yang bisa melihat ini</span> <button type=\"submit\" class=\"btn btn-primary\" style=\"height: 36px; padding: 0 16px; border-radius: 8px; font-size: 13px;\">Simpan</button></div></form></div></div></div></div><!-- Include Sortable JS inside dashboard to make Kanban work --><script>\n\t\t\t\tif (typeof Sortable !== 'undefined') {\n\t\t\t\t\tinitSortable();\n\t\t\t\t} else {\n\t\t\t\t\t// Fallback if Sortable is loaded later\n\t\t\t\t\tdocument.addEventListener('DOMContentLoaded', initSortable);\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\tfunction initSortable() {\n\t\t\t\t\tvar cols = document.querySelectorAll('.kanban-list');\n\t\t\t\t\tcols.forEach(function(col) {\n\t\t\t\t\t\tnew Sortable(col, {\n\t\t\t\t\t\t\tgroup: 'shared',\n\t\t\t\t\t\t\tanimation: 150,\n\t\t\t\t\t\t\tghostClass: 'sortable-ghost',\n\t\t\t\t\t\t\tonEnd: function (evt) {\n\t\t\t\t\t\t\t\tvar itemEl = evt.item;\n\t\t\t\t\t\t\t\tvar toCol = evt.to;\n\t\t\t\t\t\t\t\tvar newStatus = toCol.getAttribute('data-status');\n\t\t\t\t\t\t\t\tvar taskId = itemEl.getAttribute('data-task-id');\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t// Trigger HTMX request to update status if needed\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

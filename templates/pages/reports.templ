@@ -10,12 +10,7 @@ import (
 templ Reports(logs []models.TimeLogWithDetails) {
 	@layouts.Base("Laporan Waktu", "reports") {
 		<div class="page-container">
-			@components.PageHeader(
-				"Time Tracker",
-				"Histori waktu kerja dan estimasi fokus",
-				nil,
-			)
-			@components.PageToolbar()
+			@components.PageHeader("Laporan Waktu", "Lihat statistik dan laporan produktivitas kamu", nil)
 
 			<div class="card">
 				if len(logs) == 0 {

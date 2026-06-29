@@ -30,8 +30,8 @@ templ NewTaskBtn() {
 		hx-target="#modal-container"
 		hx-swap="innerHTML"
 		id="new-task-btn"
-		style="display: flex; align-items: center; gap: 8px;"
-	><i data-lucide="plus" style="width: 18px; height: 18px;"></i> Task Baru</button>
+		style="display: flex; align-items: center; gap: 8px; border-radius: 8px;"
+	><i data-lucide="plus" style="width: 16px; height: 16px;"></i> Task Baru <i data-lucide="chevron-down" style="width: 16px; height: 16px; margin-left: 4px;"></i></button>
 }
 
 templ Dashboard(data DashboardData) {
@@ -42,36 +42,50 @@ templ Dashboard(data DashboardData) {
 				"Mari fokus dan selesaikan hal-hal penting hari ini.",
 				NewTaskBtn(),
 			)
-			@components.PageToolbar()
 
 			<!-- Main Layout 70/30 -->
 			<div class="page-content-scroll">
-				<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
+				<div class="dashboard-layout">
 					
 					<!-- Left Content (70%) -->
-					<div style="flex: 1 1 60%; min-width: 0; display: flex; flex-direction: column;">
+					<div class="dashboard-main">
 						<!-- Stats Row -->
 						<div class="stats-grid">
-							@components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-kanban"), "stats-blue")
-							@components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("circle-check"), "stats-green")
+							@components.StatsCard("Task Aktif", data.ActiveTasks, DashboardIcon("square-check"), "stats-blue")
+							@components.StatsCard("Selesai", data.DoneTasks, DashboardIcon("check"), "stats-green")
 							@components.StatsCard("Hari Ini", data.TodayTasks, DashboardIcon("clock-3"), "stats-orange")
 							@components.StatsCard("Reminder", data.TodayReminders, DashboardIcon("bell"), "stats-purple")
 						</div>
 
 						<!-- Kanban Board -->
-						<div class="kanban-board-container">
+						<div class="kanban-board-container" style="margin-bottom: 24px;">
+							<div class="section-header" style="margin-bottom: 16px;">
+								<h2 class="section-title" style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+									<div style="width: 32px; height: 32px; background: #F5F3FF; color: #8B5CF6; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i data-lucide="square-kanban" style="width: 18px; height: 18px;"></i></div> Tasks Board
+								</h2>
+								<p class="page-subtitle" style="margin: 4px 0 0 40px; font-size: 13px;">Kelola semua pekerjaan kamu</p>
+							</div>
 							<div class="kanban-board">
 								<!-- Todo Column -->
 								<div class="kanban-col">
 									<div class="kanban-col-header">
 										<h2 class="kanban-col-title">To Do</h2>
-										<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")) }</span>
+										<div style="display: flex; align-items: center; gap: 8px;">
+											<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "todo")) }</span>
+											<i data-lucide="plus" style="width: 16px; height: 16px; color: var(--color-text-muted);"></i>
+										</div>
 									</div>
 									<div class="kanban-list" id="col-todo" data-status="todo" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
 										for _, task := range data.AllTasks {
 											if task.Status == models.Status("todo") {
 												@components.TaskCard(task)
 											}
+										}
+										if countStatus(data.AllTasks, "todo") == 0 {
+											<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; text-align: center; color: var(--color-text-muted); gap: 12px;">
+												<i data-lucide="inbox" style="width: 48px; height: 48px; opacity: 0.5;"></i>
+												<div style="font-size: 13px;">Belum ada task<br/>Klik + untuk menambahkan task</div>
+											</div>
 										}
 									</div>
 								</div>
@@ -80,7 +94,10 @@ templ Dashboard(data DashboardData) {
 								<div class="kanban-col">
 									<div class="kanban-col-header">
 										<h2 class="kanban-col-title">Sedang Dikerjakan</h2>
-										<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")) }</span>
+										<div style="display: flex; align-items: center; gap: 8px;">
+											<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "in_progress")) }</span>
+											<i data-lucide="plus" style="width: 16px; height: 16px; color: var(--color-text-muted);"></i>
+										</div>
 									</div>
 									<div class="kanban-list" id="col-inprogress" data-status="in_progress" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
 										for _, task := range data.AllTasks {
@@ -95,7 +112,10 @@ templ Dashboard(data DashboardData) {
 								<div class="kanban-col">
 									<div class="kanban-col-header">
 										<h2 class="kanban-col-title">Selesai</h2>
-										<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "done")) }</span>
+										<div style="display: flex; align-items: center; gap: 8px;">
+											<span class="kanban-col-count">{ fmt.Sprintf("%d", countStatus(data.AllTasks, "done")) }</span>
+											<i data-lucide="plus" style="width: 16px; height: 16px; color: var(--color-text-muted);"></i>
+										</div>
 									</div>
 									<div class="kanban-list" id="col-done" data-status="done" hx-put="/tasks/reorder" hx-trigger="end" hx-swap="none">
 										for _, task := range data.AllTasks {
@@ -105,6 +125,46 @@ templ Dashboard(data DashboardData) {
 										}
 									</div>
 								</div>
+							</div>
+						</div>
+						
+						<!-- Ringkasan Fokus Widget -->
+						<div class="rs-card ringkasan-fokus-card">
+							<div>
+								<h2 class="rs-card-title">
+									<i data-lucide="activity" style="width: 16px; height: 16px; color: var(--color-primary);"></i> Ringkasan Fokus
+								</h2>
+								<div style="display: flex; gap: 32px; margin-top: 12px;">
+									<div>
+										<div style="font-size: 12px; color: var(--color-text-secondary);">Sesi Selesai</div>
+										<div style="font-size: 20px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2;">
+											if data.DailyRecap != nil {
+												{ fmt.Sprintf("%d", data.DailyRecap.PomodorosCompleted) }
+											} else {
+												0
+											}
+										</div>
+										<div style="font-size: 11px; color: var(--color-text-muted);">dari 5 target</div>
+									</div>
+									<div>
+										<div style="font-size: 12px; color: var(--color-text-secondary);">Waktu Fokus</div>
+										<div style="font-size: 20px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2;">
+											if data.DailyRecap != nil {
+												{ formatDuration(data.DailyRecap.TotalFocusSeconds) }
+											} else {
+												1h 15m
+											}
+										</div>
+										<div style="font-size: 11px; color: var(--color-text-muted);">dari 2h target</div>
+									</div>
+								</div>
+							</div>
+							<div style="display: flex; align-items: center; justify-content: center; position: relative;">
+								<svg width="96" height="96" viewBox="0 0 120 120">
+									<circle cx="60" cy="60" r="50" fill="none" stroke="#E5E7EB" stroke-width="12" />
+									<circle cx="60" cy="60" r="50" fill="none" stroke="#2563EB" stroke-width="12" stroke-dasharray="314" stroke-dashoffset={ fmt.Sprintf("%d", int(314 * (1.0 - float64(calculateProgress(data.DailyRecap))/100.0))) } transform="rotate(-90 60 60)" stroke-linecap="round" />
+								</svg>
+								<div style="position: absolute; font-size: 16px; font-weight: 700; color: var(--color-primary);">{ fmt.Sprintf("%d%%", calculateProgress(data.DailyRecap)) }</div>
 							</div>
 						</div>
 					</div>
@@ -146,31 +206,7 @@ templ Dashboard(data DashboardData) {
 							}
 						</div>
 
-						<!-- Focus Card -->
-						<div class="rs-card">
-							<h2 class="rs-card-title">Target Pomodoro</h2>
-							<div style="display: flex; align-items: flex-end; gap: 8px;">
-								<span class="focus-pomodoro">
-									if data.DailyRecap != nil {
-										{ fmt.Sprintf("%d", data.DailyRecap.PomodorosCompleted) }
-									} else {
-										0
-									}
-								</span>
-								<span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 6px;">/ 5 sesi</span>
-							</div>
-							<div class="focus-progress">
-								<div class="focus-progress-bar" style={ fmt.Sprintf("width: %d%%", calculateProgress(data.DailyRecap)) }></div>
-							</div>
-							<div style="font-size: 13px; color: var(--color-text-secondary); font-weight: 500;">
-								Waktu fokus: 
-								if data.DailyRecap != nil {
-									{ formatDuration(data.DailyRecap.TotalFocusSeconds) }
-								} else {
-									0h 0m
-								}
-							</div>
-						</div>
+						<!-- End Laporan Waktu Widget -->
 
 						<!-- Brain Dump Widget -->
 						<div class="rs-card">

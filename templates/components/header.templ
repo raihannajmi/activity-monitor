@@ -4,6 +4,7 @@ templ PageHeader(title string, subtitle string, actionBtn templ.Component) {
 	<div class="page-header">
 		<div class="header-left">
 			<div>
+				<div class="page-greeting">Hai! 👋</div>
 				<h1 class="page-title">{ title }</h1>
 				if subtitle != "" {
 					<p class="page-subtitle">{ subtitle }</p>
@@ -11,33 +12,12 @@ templ PageHeader(title string, subtitle string, actionBtn templ.Component) {
 			</div>
 		</div>
 		<div class="header-right">
-			<div class="header-actions" style="display: flex; gap: 16px; align-items: center;">
-				<button class="btn-icon" aria-label="Search"><i data-lucide="search"></i></button>
-				<button class="btn-icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+			<div class="header-actions" style="display: flex; gap: 12px; align-items: center;">
+				<button class="btn btn-secondary" style="border-radius: 8px;"><i data-lucide="calendar" style="width: 16px; height: 16px;"></i> 26 Jun 2024</button>
 				if actionBtn != nil {
 					@actionBtn
 				}
 			</div>
-		</div>
-	</div>
-}
-
-templ PageToolbar(children ...templ.Component) {
-	<div class="page-toolbar">
-		<div class="toolbar-group">
-			<div class="search-input-wrapper" style="position: relative; display: flex; align-items: center;">
-				<i data-lucide="search" style="position: absolute; left: 16px; width: 18px; height: 18px; color: var(--color-text-muted);"></i>
-				<input type="text" placeholder="Cari..." style="width: 320px; height: 44px; padding: 0 16px 0 46px; border-radius: 12px; border: 1px solid var(--color-border); background: white; font-family: inherit; font-size: 14px;"/>
-			</div>
-			<button class="btn btn-secondary"><i data-lucide="filter" style="width: 18px; height: 18px;"></i> Filter</button>
-			<button class="btn btn-secondary"><i data-lucide="flag" style="width: 18px; height: 18px;"></i> Priority</button>
-			<button class="btn btn-secondary"><i data-lucide="arrow-up-down" style="width: 18px; height: 18px;"></i> Sort</button>
-			<button class="btn btn-secondary"><i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i> View</button>
-		</div>
-		<div class="toolbar-group">
-			for _, child := range children {
-				@child
-			}
 		</div>
 	</div>
 }
