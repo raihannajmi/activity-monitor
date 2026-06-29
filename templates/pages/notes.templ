@@ -45,10 +45,12 @@ templ Notes(notes []models.Note, query string) {
 				"Tulis apa saja yang ada di pikiranmu",
 				NewNoteBtn(),
 			)
-			@SearchNoteInput(query)
+			<div class="page-content-scroll">
+				@SearchNoteInput(query)
 
-			<!-- Notes Grid -->
-			@NotesList(notes)
+				<!-- Notes Grid -->
+				@NotesList(notes)
+			</div>
 		</div>
 	}
 }

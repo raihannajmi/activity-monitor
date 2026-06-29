@@ -130,11 +130,15 @@ func Notes(notes []models.Note, query string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"page-content-scroll\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			templ_7745c5c3_Err = SearchNoteInput(query).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Notes Grid -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Notes Grid -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -142,7 +146,7 @@ func Notes(notes []models.Note, query string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -178,12 +182,12 @@ func NotesList(notes []models.Note) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(notes) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"empty-state empty-state-lg\" id=\"notes-list\"><i data-lucide=\"brain-circuit\" style=\"width: 48px; height: 48px; color: var(--color-text-secondary); margin-bottom: 16px;\"></i><h3 style=\"font-size: 16px; font-weight: 600; color: var(--color-text-primary);\">Belum ada catatan</h3><p class=\"empty-text\">Mulai tulis ide atau pikiranmu di sini</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"empty-state empty-state-lg\" id=\"notes-list\"><i data-lucide=\"brain-circuit\" style=\"width: 48px; height: 48px; color: var(--color-text-secondary); margin-bottom: 16px;\"></i><h3 style=\"font-size: 16px; font-weight: 600; color: var(--color-text-primary);\">Belum ada catatan</h3><p class=\"empty-text\">Mulai tulis ide atau pikiranmu di sini</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"notes-grid\" id=\"notes-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"notes-grid\" id=\"notes-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -193,7 +197,7 @@ func NotesList(notes []models.Note) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -12,62 +12,64 @@ templ Reports(logs []models.TimeLogWithDetails) {
 		<div class="page-container">
 			@components.PageHeader("Laporan Waktu", "Lihat statistik dan laporan produktivitas kamu", nil)
 
-			<div class="card">
-				if len(logs) == 0 {
-					<div class="empty-state">
-						<i data-lucide="clock-3" style="width: 48px; height: 48px; color: var(--color-text-secondary); margin-bottom: 16px;"></i>
-						<h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-primary);">Belum ada histori waktu</h3>
-						<p class="empty-text">Mulai tracker di dalam halaman Tasks untuk merekam waktu.</p>
-					</div>
-				} else {
-					<div class="table-container">
-						<table class="report-table">
-							<thead>
-								<tr>
-									<th>Task / Subtask</th>
-									<th>Mulai</th>
-									<th>Selesai</th>
-									<th>Durasi</th>
-									<th>Tipe</th>
-								</tr>
-							</thead>
-							<tbody>
-								for _, log := range logs {
+			<div class="page-content-scroll">
+				<div class="card">
+					if len(logs) == 0 {
+						<div class="empty-state">
+							<i data-lucide="clock-3" style="width: 48px; height: 48px; color: var(--color-text-secondary); margin-bottom: 16px;"></i>
+							<h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-primary);">Belum ada histori waktu</h3>
+							<p class="empty-text">Mulai tracker di dalam halaman Tasks untuk merekam waktu.</p>
+						</div>
+					} else {
+						<div class="table-container">
+							<table class="report-table">
+								<thead>
 									<tr>
-										<td>
-											<div class="report-task-name">
-												if log.TaskTitle != "" {
-													<span class="main-task">{ log.TaskTitle }</span>
-												}
-												if log.SubtaskTitle != "" {
-													<span class="sub-task">↳ { log.SubtaskTitle }</span>
-												}
-											</div>
-										</td>
-										<td>{ log.StartTime.Format("02 Jan, 15:04") }</td>
-										<td>
-											if log.EndTime != nil {
-												{ log.EndTime.Format("15:04") }
-											} else {
-												<span class="status-badge status-inprogress">Berjalan</span>
-											}
-										</td>
-										<td class="tabular-nums">
-											if log.DurationSeconds > 0 {
-												{ fmt.Sprintf("%dm %ds", log.DurationSeconds / 60, log.DurationSeconds % 60) }
-											} else {
-												-
-											}
-										</td>
-										<td>
-											<span class="report-badge">{ log.SessionType }</span>
-										</td>
+										<th>Task / Subtask</th>
+										<th>Mulai</th>
+										<th>Selesai</th>
+										<th>Durasi</th>
+										<th>Tipe</th>
 									</tr>
-								}
-							</tbody>
-						</table>
-					</div>
-				}
+								</thead>
+								<tbody>
+									for _, log := range logs {
+										<tr>
+											<td>
+												<div class="report-task-name">
+													if log.TaskTitle != "" {
+														<span class="main-task">{ log.TaskTitle }</span>
+													}
+													if log.SubtaskTitle != "" {
+														<span class="sub-task">↳ { log.SubtaskTitle }</span>
+													}
+												</div>
+											</td>
+											<td>{ log.StartTime.Format("02 Jan, 15:04") }</td>
+											<td>
+												if log.EndTime != nil {
+													{ log.EndTime.Format("15:04") }
+												} else {
+													<span class="status-badge status-inprogress">Berjalan</span>
+												}
+											</td>
+											<td class="tabular-nums">
+												if log.DurationSeconds > 0 {
+													{ fmt.Sprintf("%dm %ds", log.DurationSeconds / 60, log.DurationSeconds % 60) }
+												} else {
+													-
+												}
+											</td>
+											<td>
+												<span class="report-badge">{ log.SessionType }</span>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+				</div>
 			</div>
 		</div>
 	}

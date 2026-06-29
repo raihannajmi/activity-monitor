@@ -18,51 +18,56 @@ templ Tasks(tasks []models.Task, filter string) {
 				NewTaskBtn(), // Reusing from dashboard for now, or just button directly
 			)
 
-			<!-- Mobile Segmented Control -->
-			<div class="mobile-kanban-tabs">
-				<button class="kanban-tab active" data-target="col-todo">Todo</button>
-				<button class="kanban-tab" data-target="col-in_progress">Doing</button>
-				<button class="kanban-tab" data-target="col-done">Done</button>
-			</div>
-
-			<!-- Kanban Board -->
-			<div class="kanban-board">
-				<!-- Todo Column -->
-				<div class="kanban-col">
-					<div class="kanban-col-header">
-						<span class="kanban-col-title">Todo</span>
-						<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusTodo)) }</span>
-					</div>
-					<div class="kanban-list" id="col-todo" data-status="todo">
-						for _, task := range filterTasks(tasks, models.StatusTodo) {
-							@components.TaskCard(task)
-						}
-					</div>
+			<div class="page-content-scroll">
+				<!-- Mobile Segmented Control -->
+				<div class="mobile-kanban-tabs">
+					<button class="kanban-tab active" data-target="col-todo">Todo</button>
+					<button class="kanban-tab" data-target="col-in_progress">Doing</button>
+					<button class="kanban-tab" data-target="col-done">Done</button>
 				</div>
 
-				<!-- In Progress Column -->
-				<div class="kanban-col">
-					<div class="kanban-col-header">
-						<span class="kanban-col-title">Sedang Dikerjakan</span>
-						<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusInProgress)) }</span>
-					</div>
-					<div class="kanban-list" id="col-in_progress" data-status="in_progress">
-						for _, task := range filterTasks(tasks, models.StatusInProgress) {
-							@components.TaskCard(task)
-						}
-					</div>
-				</div>
+				<!-- Kanban Board Container -->
+				<div class="kanban-board-container">
+					<!-- Kanban Board -->
+					<div class="kanban-board">
+						<!-- Todo Column -->
+						<div class="kanban-col">
+							<div class="kanban-col-header">
+								<span class="kanban-col-title">Todo</span>
+								<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusTodo)) }</span>
+							</div>
+							<div class="kanban-list" id="col-todo" data-status="todo">
+								for _, task := range filterTasks(tasks, models.StatusTodo) {
+									@components.TaskCard(task)
+								}
+							</div>
+						</div>
 
-				<!-- Done Column -->
-				<div class="kanban-col">
-					<div class="kanban-col-header">
-						<span class="kanban-col-title">Selesai</span>
-						<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusDone)) }</span>
-					</div>
-					<div class="kanban-list" id="col-done" data-status="done">
-						for _, task := range filterTasks(tasks, models.StatusDone) {
-							@components.TaskCard(task)
-						}
+						<!-- In Progress Column -->
+						<div class="kanban-col">
+							<div class="kanban-col-header">
+								<span class="kanban-col-title">Sedang Dikerjakan</span>
+								<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusInProgress)) }</span>
+							</div>
+							<div class="kanban-list" id="col-in_progress" data-status="in_progress">
+								for _, task := range filterTasks(tasks, models.StatusInProgress) {
+									@components.TaskCard(task)
+								}
+							</div>
+						</div>
+
+						<!-- Done Column -->
+						<div class="kanban-col">
+							<div class="kanban-col-header">
+								<span class="kanban-col-title">Selesai</span>
+								<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusDone)) }</span>
+							</div>
+							<div class="kanban-list" id="col-done" data-status="done">
+								for _, task := range filterTasks(tasks, models.StatusDone) {
+									@components.TaskCard(task)
+								}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -138,111 +143,113 @@ func countTasks(tasks []models.Task, status models.Status) int {
 templ TaskDetail(task models.Task) {
 	@layouts.Base(task.Title, "tasks") {
 		<div class="page-container">
-			<div class="detail-header">
-				<a href="/tasks" class="back-link" id="back-to-tasks">← Kembali ke Tasks</a>
-				<div class="detail-actions">
-					<button
-						class="btn btn-ghost"
-						hx-get={ "/tasks/" + task.ID + "/edit" }
-						hx-target="#modal-container"
-						hx-swap="innerHTML"
-						id="edit-task-detail-btn"
-					>Edit</button>
-					<button
-						class="btn btn-ghost btn-danger-ghost"
-						hx-delete={ "/tasks/" + task.ID }
-						hx-target="body"
-						hx-push-url="/tasks"
-						hx-confirm="Hapus task ini?"
-						id="delete-task-detail-btn"
-					>Hapus</button>
-				</div>
-			</div>
-
-			<div class="detail-card">
-				<div class="detail-meta">
-					<span class={ "priority-badge", task.PriorityColor() }>{ task.PriorityLabel() }</span>
-					<span class="status-text">{ task.StatusLabel() }</span>
-					if task.Deadline != nil {
-						<span class="task-deadline">◷ { task.Deadline.Format("02 Jan 2006") }</span>
-					}
-				</div>
-
-				<h1 class="detail-title">{ task.Title }</h1>
-
-				if task.Description != "" {
-					<p class="detail-desc">{ task.Description }</p>
-				}
-
-				if len(task.Subtasks) > 0 {
-					<div class="detail-progress">
-						@components.ProgressBar(task)
-					</div>
-				}
-
-				<!-- Status Actions -->
-				<div class="detail-status-actions">
-					if task.Status != models.StatusInProgress && task.Status != models.StatusDone {
+			<div class="page-content-scroll">
+				<div class="detail-header">
+					<a href="/tasks" class="back-link" id="back-to-tasks">← Kembali ke Tasks</a>
+					<div class="detail-actions">
 						<button
-							class="btn btn-secondary"
-							hx-put={ "/tasks/" + task.ID + "/status" }
-							hx-vals={ `{"status":"in_progress"}` }
-							hx-target="body"
-							hx-push-url={ "/tasks/" + task.ID }
-							id="start-task-detail-btn"
-						>Mulai Mengerjakan</button>
-					}
-					if task.Status != models.StatusDone {
+							class="btn btn-ghost"
+							hx-get={ "/tasks/" + task.ID + "/edit" }
+							hx-target="#modal-container"
+							hx-swap="innerHTML"
+							id="edit-task-detail-btn"
+						>Edit</button>
 						<button
-							class="btn btn-primary"
-							hx-put={ "/tasks/" + task.ID + "/status" }
-							hx-vals={ `{"status":"done"}` }
+							class="btn btn-ghost btn-danger-ghost"
+							hx-delete={ "/tasks/" + task.ID }
 							hx-target="body"
-							hx-push-url={ "/tasks/" + task.ID }
-							id="done-task-detail-btn"
-						>Tandai Selesai</button>
-					}
-				</div>
-			</div>
-
-			<!-- Subtasks Section -->
-			<div class="section">
-				<div class="section-header">
-					<h2 class="section-title">Subtasks</h2>
-					<span class="section-badge">
-						{ func() string {
-							done, total := task.SubtaskProgress()
-							if total == 0 { return "0" }
-							return done_of(done, total)
-						}() }
-					</span>
-				</div>
-				@components.SubtaskList(task)
-			</div>
-
-			<!-- Reminders Section -->
-			<div class="section">
-				<div class="section-header">
-					<h2 class="section-title">Reminder</h2>
-					<button
-						class="btn btn-sm btn-ghost"
-						hx-get={ "/tasks/" + task.ID + "/reminder/new" }
-						hx-target="#modal-container"
-						hx-swap="innerHTML"
-						id="add-reminder-btn"
-					>+ Reminder</button>
-				</div>
-				if len(task.Reminders) == 0 {
-					<div class="empty-state empty-state-sm">
-						<p class="empty-text">Belum ada reminder untuk task ini</p>
+							hx-push-url="/tasks"
+							hx-confirm="Hapus task ini?"
+							id="delete-task-detail-btn"
+						>Hapus</button>
 					</div>
-				} else {
-					<div class="reminder-list" id="reminder-list">
-						for _, r := range task.Reminders {
-							@components.ReminderCard(r)
+				</div>
+
+				<div class="detail-card">
+					<div class="detail-meta">
+						<span class={ "priority-badge", task.PriorityColor() }>{ task.PriorityLabel() }</span>
+						<span class="status-text">{ task.StatusLabel() }</span>
+						if task.Deadline != nil {
+							<span class="task-deadline">◷ { task.Deadline.Format("02 Jan 2006") }</span>
 						}
 					</div>
-				}
+
+					<h1 class="detail-title">{ task.Title }</h1>
+
+					if task.Description != "" {
+						<p class="detail-desc">{ task.Description }</p>
+					}
+
+					if len(task.Subtasks) > 0 {
+						<div class="detail-progress">
+							@components.ProgressBar(task)
+						</div>
+					}
+
+					<!-- Status Actions -->
+					<div class="detail-status-actions">
+						if task.Status != models.StatusInProgress && task.Status != models.StatusDone {
+							<button
+								class="btn btn-secondary"
+								hx-put={ "/tasks/" + task.ID + "/status" }
+								hx-vals={ `{"status":"in_progress"}` }
+								hx-target="body"
+								hx-push-url={ "/tasks/" + task.ID }
+								id="start-task-detail-btn"
+							>Mulai Mengerjakan</button>
+						}
+						if task.Status != models.StatusDone {
+							<button
+								class="btn btn-primary"
+								hx-put={ "/tasks/" + task.ID + "/status" }
+								hx-vals={ `{"status":"done"}` }
+								hx-target="body"
+								hx-push-url={ "/tasks/" + task.ID }
+								id="done-task-detail-btn"
+							>Tandai Selesai</button>
+						}
+					</div>
+				</div>
+
+				<!-- Subtasks Section -->
+				<div class="section">
+					<div class="section-header">
+						<h2 class="section-title">Subtasks</h2>
+						<span class="section-badge">
+							{ func() string {
+								done, total := task.SubtaskProgress()
+								if total == 0 { return "0" }
+								return done_of(done, total)
+							}() }
+						</span>
+					</div>
+					@components.SubtaskList(task)
+				</div>
+
+				<!-- Reminders Section -->
+				<div class="section">
+					<div class="section-header">
+						<h2 class="section-title">Reminder</h2>
+						<button
+							class="btn btn-sm btn-ghost"
+							hx-get={ "/tasks/" + task.ID + "/reminder/new" }
+							hx-target="#modal-container"
+							hx-swap="innerHTML"
+							id="add-reminder-btn"
+						>+ Reminder</button>
+					</div>
+					if len(task.Reminders) == 0 {
+						<div class="empty-state empty-state-sm">
+							<p class="empty-text">Belum ada reminder untuk task ini</p>
+						</div>
+					} else {
+						<div class="reminder-list" id="reminder-list">
+							for _, r := range task.Reminders {
+								@components.ReminderCard(r)
+							}
+						</div>
+					}
+				</div>
 			</div>
 		</div>
 	}

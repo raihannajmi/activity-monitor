@@ -9,28 +9,25 @@ import (
 templ Timeline(activities []models.Activity) {
 	@layouts.Base("Timeline", "timeline") {
 		<div class="page-container">
-			<div class="page-header">
-				<div>
-					<h1 class="page-title">Timeline</h1>
-					<p class="page-subtitle">Semua aktivitas kamu tercatat di sini</p>
-				</div>
-			</div>
+			@components.PageHeader("Timeline", "Semua aktivitas kamu tercatat di sini", nil)
 
-			if len(activities) == 0 {
-				<div class="empty-state empty-state-lg">
-					<div class="empty-icon">◷</div>
-					<p class="empty-title">Belum ada aktivitas</p>
-					<p class="empty-text">Mulai buat task atau catatan untuk melihat timeline</p>
-				</div>
-			} else {
-				<div class="timeline-container">
-					<div class="activity-list timeline-list">
-						for _, a := range activities {
-							@components.ActivityItem(a)
-						}
+			<div class="page-content-scroll">
+				if len(activities) == 0 {
+					<div class="empty-state empty-state-lg">
+						<div class="empty-icon">◷</div>
+						<p class="empty-title">Belum ada aktivitas</p>
+						<p class="empty-text">Mulai buat task atau catatan untuk melihat timeline</p>
 					</div>
-				</div>
-			}
+				} else {
+					<div class="timeline-container">
+						<div class="activity-list timeline-list">
+							for _, a := range activities {
+								@components.ActivityItem(a)
+							}
+						</div>
+					</div>
+				}
+			</div>
 		</div>
 	}
 }
