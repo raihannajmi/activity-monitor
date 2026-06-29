@@ -63,7 +63,7 @@ func TaskFormModal(task *models.Task, allTasks []models.Task) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if task != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Trello-style Columns Details Modal --> <div class=\"modal-form\" style=\"display: grid; grid-template-columns: 2fr 1fr; gap: 24px; padding: 20px;\"><!-- Left Main Area (70%) --><div style=\"display: flex; flex-direction: column; gap: 20px;\"><!-- Title & Description Form --><form hx-put=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Trello-style Columns Details Modal --> <div class=\"modal-form task-detail-grid\"><!-- Left Main Area (70%) --><div style=\"display: flex; flex-direction: column; gap: 20px;\"><!-- Title & Description Form --><form hx-put=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -291,7 +291,7 @@ func TaskFormModal(task *models.Task, allTasks []models.Task) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></div></div><!-- Right Sidebar Area (30%) --><div style=\"display: flex; flex-direction: column; gap: 20px; border-left: 1px solid var(--color-border); padding-left: 20px;\"><!-- Focus Engine Sync --><div style=\"background: #FFF5F5; border: 1px solid #FEB2B2; padding: 12px; border-radius: 8px;\"><h4 style=\"font-size: 13px; font-weight: bold; color: var(--color-danger); display: flex; align-items: center; gap: 4px; margin-bottom: 8px;\">🍅 Focus Engine</h4><form hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></div></div><!-- Right Sidebar Area (30%) --><div class=\"task-detail-sidebar\"><!-- Focus Engine Sync --><div style=\"background: #FFF5F5; border: 1px solid #FEB2B2; padding: 12px; border-radius: 8px;\"><h4 style=\"font-size: 13px; font-weight: bold; color: var(--color-danger); display: flex; align-items: center; gap: 4px; margin-bottom: 8px;\">🍅 Focus Engine</h4><form hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

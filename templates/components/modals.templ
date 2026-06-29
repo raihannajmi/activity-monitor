@@ -21,7 +21,7 @@ templ TaskFormModal(task *models.Task, allTasks []models.Task) {
 			
 			if task != nil {
 				<!-- Trello-style Columns Details Modal -->
-				<div class="modal-form" style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; padding: 20px;">
+				<div class="modal-form task-detail-grid">
 					<!-- Left Main Area (70%) -->
 					<div style="display: flex; flex-direction: column; gap: 20px;">
 						<!-- Title & Description Form -->
@@ -102,7 +102,7 @@ templ TaskFormModal(task *models.Task, allTasks []models.Task) {
 					</div>
 
 					<!-- Right Sidebar Area (30%) -->
-					<div style="display: flex; flex-direction: column; gap: 20px; border-left: 1px solid var(--color-border); padding-left: 20px;">
+					<div class="task-detail-sidebar">
 						<!-- Focus Engine Sync -->
 						<div style="background: #FFF5F5; border: 1px solid #FEB2B2; padding: 12px; border-radius: 8px;">
 							<h4 style="font-size: 13px; font-weight: bold; color: var(--color-danger); display: flex; align-items: center; gap: 4px; margin-bottom: 8px;">
