@@ -131,7 +131,7 @@ templ TaskFormModal(task *models.Task, allTasks []models.Task) {
 							<div style="display: flex; flex-direction: column; gap: 6px;">
 								<!-- Render checklist labels options -->
 								for _, labelId := range []string{"w", "s", "p", "u", "b", "f", "r"} {
-									{ func() string {
+									{{
 										name := ""
 										color := ""
 										switch labelId {
@@ -151,19 +151,19 @@ templ TaskFormModal(task *models.Task, allTasks []models.Task) {
 												break
 											}
 										}
-										
-										checkedStr := ""
-										if hasLabel {
-											checkedStr = "checked"
-										}
-										
-										return fmt.Sprintf(`
-											<label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-												<input type="checkbox" %s hx-post="/tasks/%s/labels" hx-vals='{"label_id": "%s"}' hx-swap="none" style="accent-color: %s;" />
-												<span style="background: %s15; color: %s; padding: 2px 6px; border-radius: 4px; font-weight: 500;">%s</span>
-											</label>
-										`, checkedStr, task.ID, labelId, color, color, color, name)
-									}() }
+									}}
+									<label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+										<input type="checkbox"
+											if hasLabel {
+												checked
+											}
+											hx-post={ "/tasks/" + task.ID + "/labels" }
+											hx-vals={ fmt.Sprintf(`{"label_id": "%s"}`, labelId) }
+											hx-swap="none"
+											style={ fmt.Sprintf("accent-color: %s;", color) }
+										/>
+										<span style={ fmt.Sprintf("background: %s15; color: %s; padding: 2px 6px; border-radius: 4px; font-weight: 500;", color, color) }>{ name }</span>
+									</label>
 								}
 							</div>
 						</div>

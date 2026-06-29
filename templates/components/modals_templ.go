@@ -348,158 +348,215 @@ func TaskFormModal(task *models.Task, allTasks []models.Task) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, labelId := range []string{"w", "s", "p", "u", "b", "f", "r"} {
+				name := ""
+				color := ""
+				switch labelId {
+				case "w":
+					name = "Work"
+					color = "#3B82F6"
+				case "s":
+					name = "Study"
+					color = "#10B981"
+				case "p":
+					name = "Personal"
+					color = "#6366F1"
+				case "u":
+					name = "Urgent"
+					color = "#EF4444"
+				case "b":
+					name = "Bug"
+					color = "#EC4899"
+				case "f":
+					name = "Feature"
+					color = "#F59E0B"
+				case "r":
+					name = "Research"
+					color = "#8B5CF6"
+				}
+
+				hasLabel := false
+				for _, tl := range task.Labels {
+					if tl.ID == labelId {
+						hasLabel = true
+						break
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<label style=\"display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;\"><input type=\"checkbox\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if hasLabel {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, " checked")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, " hx-post=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 				var templ_7745c5c3_Var18 string
-				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(func() string {
-					name := ""
-					color := ""
-					switch labelId {
-					case "w":
-						name = "Work"
-						color = "#3B82F6"
-					case "s":
-						name = "Study"
-						color = "#10B981"
-					case "p":
-						name = "Personal"
-						color = "#6366F1"
-					case "u":
-						name = "Urgent"
-						color = "#EF4444"
-					case "b":
-						name = "Bug"
-						color = "#EC4899"
-					case "f":
-						name = "Feature"
-						color = "#F59E0B"
-					case "r":
-						name = "Research"
-						color = "#8B5CF6"
-					}
-
-					hasLabel := false
-					for _, tl := range task.Labels {
-						if tl.ID == labelId {
-							hasLabel = true
-							break
-						}
-					}
-
-					checkedStr := ""
-					if hasLabel {
-						checkedStr = "checked"
-					}
-
-					return fmt.Sprintf(`
-											<label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-												<input type="checkbox" %s hx-post="/tasks/%s/labels" hx-vals='{"label_id": "%s"}' hx-swap="none" style="accent-color: %s;" />
-												<span style="background: %s15; color: %s; padding: 2px 6px; border-radius: 4px; font-weight: 500;">%s</span>
-											</label>
-										`, checkedStr, task.ID, labelId, color, color, color, name)
-				}())
+				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/labels")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 166, Col: 12}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 160, Col: 52}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</div></div><!-- Attachments --><div><h4 style=\"font-size: 13px; font-weight: bold; margin-bottom: 8px;\">Attachments</h4><form hx-post=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var19 string
-			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/attachments")
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 174, Col: 59}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-swap=\"none\" style=\"display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;\"><input type=\"text\" name=\"filename\" class=\"form-input\" placeholder=\"Nama file...\" style=\"height: 28px; font-size: 12px;\" required> <input type=\"text\" name=\"url\" class=\"form-input\" placeholder=\"URL file...\" style=\"height: 28px; font-size: 12px;\" required> <button type=\"submit\" class=\"btn btn-secondary btn-sm\">+ Lampiran</button></form><div style=\"display: flex; flex-direction: column; gap: 4px;\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			for _, a := range task.Attachments {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" hx-vals=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var20 templ.SafeURL
-				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(a.URL))
+				var templ_7745c5c3_Var19 string
+				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf(`{"label_id": "%s"}`, labelId))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 181, Col: 39}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 161, Col: 63}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" hx-swap=\"none\" style=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var20 string
+				templ_7745c5c3_Var20, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("accent-color: %s;", color))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 163, Col: 58}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" target=\"_blank\" style=\"font-size: 12px; color: var(--color-primary); display: flex; align-items: center; gap: 4px;\"><i data-lucide=\"paperclip\" style=\"width: 12px; height: 12px;\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\"> <span style=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var21 string
-				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(a.Filename)
+				templ_7745c5c3_Var21, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("background: %s15; color: %s; padding: 2px 6px; border-radius: 4px; font-weight: 500;", color, color))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 182, Col: 89}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 165, Col: 137}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</a>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</div></div><!-- Activity Logs --><div><h4 style=\"font-size: 13px; font-weight: bold; margin-bottom: 8px;\">Aktivitas</h4><div style=\"display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; font-size: 11px; color: var(--color-text-secondary);\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			for _, log := range task.ActivityLogs {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div><strong>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var22 string
-				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(log.Type)
+				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 194, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 165, Col: 146}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, ":</strong> ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var23 string
-				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(log.CreatedAt.Format("15:04"))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 194, Col: 72}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span></label>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</div></div><!-- Attachments --><div><h4 style=\"font-size: 13px; font-weight: bold; margin-bottom: 8px;\">Attachments</h4><form hx-post=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var23 string
+			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/attachments")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 174, Col: 59}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" hx-swap=\"none\" style=\"display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;\"><input type=\"text\" name=\"filename\" class=\"form-input\" placeholder=\"Nama file...\" style=\"height: 28px; font-size: 12px;\" required> <input type=\"text\" name=\"url\" class=\"form-input\" placeholder=\"URL file...\" style=\"height: 28px; font-size: 12px;\" required> <button type=\"submit\" class=\"btn btn-secondary btn-sm\">+ Lampiran</button></form><div style=\"display: flex; flex-direction: column; gap: 4px;\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, a := range task.Attachments {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<a href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var24 templ.SafeURL
+				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(a.URL))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 181, Col: 39}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" target=\"_blank\" style=\"font-size: 12px; color: var(--color-primary); display: flex; align-items: center; gap: 4px;\"><i data-lucide=\"paperclip\" style=\"width: 12px; height: 12px;\"></i> ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var25 string
+				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(a.Filename)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 182, Col: 89}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</div></div><!-- Activity Logs --><div><h4 style=\"font-size: 13px; font-weight: bold; margin-bottom: 8px;\">Aktivitas</h4><div style=\"display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; font-size: 11px; color: var(--color-text-secondary);\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, log := range task.ActivityLogs {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<div><strong>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var26 string
+				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(log.Type)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 194, Col: 28}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, ":</strong> ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var27 string
+				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(log.CreatedAt.Format("15:04"))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 194, Col: 72}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<!-- Create Task Modal --> <form hx-post=\"/tasks\" hx-swap=\"none\" hx-on::after-request=\"if(event.detail.successful) document.getElementById('modal-container').innerHTML=''\" class=\"modal-form\" id=\"task-form\"><div class=\"form-group\"><label for=\"task-title\" class=\"form-label\">Judul</label> <input type=\"text\" id=\"task-title\" name=\"title\" class=\"form-input\" placeholder=\"Nama task...\" required autofocus></div><div class=\"form-group\"><label for=\"task-desc\" class=\"form-label\">Deskripsi</label> <textarea id=\"task-desc\" name=\"description\" class=\"form-textarea\" placeholder=\"Detail task (opsional)...\" rows=\"3\"></textarea></div><div class=\"form-row\"><div class=\"form-group\"><label for=\"task-priority\" class=\"form-label\">Prioritas</label> <select id=\"task-priority\" name=\"priority\" class=\"form-select\"><option value=\"low\">Low</option> <option value=\"medium\" selected>Medium</option> <option value=\"high\">High</option></select></div><div class=\"form-group\"><label for=\"task-deadline\" class=\"form-label\">Deadline</label> <input type=\"date\" id=\"task-deadline\" name=\"deadline\" class=\"form-input\"></div></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-ghost\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"cancel-task-form\">Batal</button> <button type=\"submit\" class=\"btn btn-primary\" id=\"submit-task-form\">Buat Task</button></div></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<!-- Create Task Modal --> <form hx-post=\"/tasks\" hx-swap=\"none\" hx-on::after-request=\"if(event.detail.successful) document.getElementById('modal-container').innerHTML=''\" class=\"modal-form\" id=\"task-form\"><div class=\"form-group\"><label for=\"task-title\" class=\"form-label\">Judul</label> <input type=\"text\" id=\"task-title\" name=\"title\" class=\"form-input\" placeholder=\"Nama task...\" required autofocus></div><div class=\"form-group\"><label for=\"task-desc\" class=\"form-label\">Deskripsi</label> <textarea id=\"task-desc\" name=\"description\" class=\"form-textarea\" placeholder=\"Detail task (opsional)...\" rows=\"3\"></textarea></div><div class=\"form-row\"><div class=\"form-group\"><label for=\"task-priority\" class=\"form-label\">Prioritas</label> <select id=\"task-priority\" name=\"priority\" class=\"form-select\"><option value=\"low\">Low</option> <option value=\"medium\" selected>Medium</option> <option value=\"high\">High</option></select></div><div class=\"form-group\"><label for=\"task-deadline\" class=\"form-label\">Deadline</label> <input type=\"date\" id=\"task-deadline\" name=\"deadline\" class=\"form-input\"></div></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-ghost\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"cancel-task-form\">Batal</button> <button type=\"submit\" class=\"btn btn-primary\" id=\"submit-task-form\">Buat Task</button></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -523,108 +580,108 @@ func NoteFormModal(note *models.Note) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var24 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var24 == nil {
-			templ_7745c5c3_Var24 = templ.NopComponent
+		templ_7745c5c3_Var28 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var28 == nil {
+			templ_7745c5c3_Var28 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div class=\"modal-backdrop\" id=\"modal-backdrop\"><div class=\"modal modal-wide\" id=\"note-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"modal-header\"><h2 class=\"modal-title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div class=\"modal-backdrop\" id=\"modal-backdrop\"><div class=\"modal modal-wide\" id=\"note-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"modal-header\"><h2 class=\"modal-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if note != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "Edit Catatan")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "Edit Catatan")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "Catatan Baru")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "Catatan Baru")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</h2><button class=\"modal-close\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"close-note-modal\">✕</button></div><form")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</h2><button class=\"modal-close\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"close-note-modal\">✕</button></div><form")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if note != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, " hx-put=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, " hx-put=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var25 string
-			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue("/notes/" + note.ID)
+			var templ_7745c5c3_Var29 string
+			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.ResolveAttributeValue("/notes/" + note.ID)
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 251, Col: 33}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var29)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, " hx-post=\"/notes\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, " hx-post=\"/notes\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, " hx-swap=\"none\" hx-on::after-request=\"if(event.detail.successful) document.getElementById('modal-container').innerHTML=''\" class=\"modal-form\" id=\"note-form\"><div class=\"form-group\"><label for=\"note-title\" class=\"form-label\">Judul</label> <input type=\"text\" id=\"note-title\" name=\"title\" class=\"form-input\" placeholder=\"Judul catatan...\" required")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, " hx-swap=\"none\" hx-on::after-request=\"if(event.detail.successful) document.getElementById('modal-container').innerHTML=''\" class=\"modal-form\" id=\"note-form\"><div class=\"form-group\"><label for=\"note-title\" class=\"form-label\">Judul</label> <input type=\"text\" id=\"note-title\" name=\"title\" class=\"form-input\" placeholder=\"Judul catatan...\" required")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if note != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, " value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, " value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var26 string
-			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(note.Title)
+			var templ_7745c5c3_Var30 string
+			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(note.Title)
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 270, Col: 25}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, " autofocus></div><div class=\"form-group\"><label for=\"note-content\" class=\"form-label\">Isi Catatan</label> <textarea id=\"note-content\" name=\"content\" class=\"form-textarea form-textarea-tall\" placeholder=\"Tulis ide, pikiran, atau rencana kamu di sini...\" rows=\"10\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, " autofocus></div><div class=\"form-group\"><label for=\"note-content\" class=\"form-label\">Isi Catatan</label> <textarea id=\"note-content\" name=\"content\" class=\"form-textarea form-textarea-tall\" placeholder=\"Tulis ide, pikiran, atau rencana kamu di sini...\" rows=\"10\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if note != nil {
-			var templ_7745c5c3_Var27 string
-			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(note.Content)
+			var templ_7745c5c3_Var31 string
+			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(note.Content)
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 285, Col: 21}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</textarea></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-ghost\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"cancel-note-form\">Batal</button> <button type=\"submit\" class=\"btn btn-primary\" id=\"submit-note-form\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</textarea></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-ghost\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"cancel-note-form\">Batal</button> <button type=\"submit\" class=\"btn btn-primary\" id=\"submit-note-form\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if note != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "Simpan Perubahan")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "Simpan Perubahan")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "Simpan Catatan")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "Simpan Catatan")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -648,48 +705,48 @@ func ReminderFormModal(taskID, taskTitle string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var28 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var28 == nil {
-			templ_7745c5c3_Var28 = templ.NopComponent
+		templ_7745c5c3_Var32 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var32 == nil {
+			templ_7745c5c3_Var32 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<div class=\"modal-backdrop\" id=\"modal-backdrop\"><div class=\"modal\" id=\"reminder-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"modal-header\"><h2 class=\"modal-title\">Buat Reminder</h2><button class=\"modal-close\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"close-reminder-modal\">✕</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<div class=\"modal-backdrop\" id=\"modal-backdrop\"><div class=\"modal\" id=\"reminder-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"modal-header\"><h2 class=\"modal-title\">Buat Reminder</h2><button class=\"modal-close\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"close-reminder-modal\">✕</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if taskTitle != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<p class=\"modal-subtitle\">untuk: <strong>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<p class=\"modal-subtitle\">untuk: <strong>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var29 string
-			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(taskTitle)
+			var templ_7745c5c3_Var33 string
+			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(taskTitle)
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 312, Col: 56}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</strong></p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</strong></p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<form hx-post=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "<form hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var30 string
-		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + taskID + "/reminders")
+		var templ_7745c5c3_Var34 string
+		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + taskID + "/reminders")
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modals.templ`, Line: 315, Col: 47}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\" hx-swap=\"none\" hx-on::after-request=\"if(event.detail.successful) document.getElementById('modal-container').innerHTML=''\" class=\"modal-form\" id=\"reminder-form\"><div class=\"form-row\"><div class=\"form-group\"><label for=\"reminder-date\" class=\"form-label\">Tanggal</label> <input type=\"date\" id=\"reminder-date\" name=\"date\" class=\"form-input\" required></div><div class=\"form-group\"><label for=\"reminder-time\" class=\"form-label\">Jam</label> <input type=\"time\" id=\"reminder-time\" name=\"time\" class=\"form-input\" required></div></div><div class=\"form-group\"><label for=\"reminder-note\" class=\"form-label\">Catatan (opsional)</label> <input type=\"text\" id=\"reminder-note\" name=\"note\" class=\"form-input\" placeholder=\"Pengingat singkat...\"></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-ghost\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"cancel-reminder-form\">Batal</button> <button type=\"submit\" class=\"btn btn-primary\" id=\"submit-reminder-form\">Buat Reminder</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "\" hx-swap=\"none\" hx-on::after-request=\"if(event.detail.successful) document.getElementById('modal-container').innerHTML=''\" class=\"modal-form\" id=\"reminder-form\"><div class=\"form-row\"><div class=\"form-group\"><label for=\"reminder-date\" class=\"form-label\">Tanggal</label> <input type=\"date\" id=\"reminder-date\" name=\"date\" class=\"form-input\" required></div><div class=\"form-group\"><label for=\"reminder-time\" class=\"form-label\">Jam</label> <input type=\"time\" id=\"reminder-time\" name=\"time\" class=\"form-input\" required></div></div><div class=\"form-group\"><label for=\"reminder-note\" class=\"form-label\">Catatan (opsional)</label> <input type=\"text\" id=\"reminder-note\" name=\"note\" class=\"form-input\" placeholder=\"Pengingat singkat...\"></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-ghost\" onclick=\"document.getElementById('modal-container').innerHTML=''\" id=\"cancel-reminder-form\">Batal</button> <button type=\"submit\" class=\"btn btn-primary\" id=\"submit-reminder-form\">Buat Reminder</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
