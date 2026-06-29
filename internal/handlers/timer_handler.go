@@ -66,7 +66,6 @@ func (h *TimerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Trigger", "timerStopped")
-	w.Header().Set("HX-Refresh", "true")
+	w.Header().Set("HX-Trigger", `{"timerStopped": true, "statsUpdated": true}`)
 	w.WriteHeader(http.StatusOK)
 }

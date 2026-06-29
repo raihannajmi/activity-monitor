@@ -1193,6 +1193,28 @@ body, .body-text { font-size: 14px; font-weight: 400; line-height: 22px; }
 
 .modal-wide { max-width: 600px; }
 
+@media (max-width: 768px) {
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    animation: slideUpMobile 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .modal-wide {
+    max-width: 100%;
+  }
+  @keyframes slideUpMobile {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+}
+
+
 .task-detail-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -1469,6 +1491,33 @@ body, .body-text { font-size: 14px; font-weight: 400; line-height: 22px; }
 
 .toast-close:hover {
   color: var(--color-text-primary);
+}
+
+.toast-success {
+  border-color: var(--color-success);
+  border-left-color: var(--color-success);
+}
+
+.toast-success .toast-title { color: var(--color-success); }
+
+.toast-error {
+  border-color: var(--color-danger);
+  border-left-color: var(--color-danger);
+}
+
+.toast-error .toast-title { color: var(--color-danger); }
+
+@media (max-width: 768px) {
+  .toast-container {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 88px !important;
+    align-items: stretch;
+  }
+  .toast {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /* --- Pomodoro Widget --- */

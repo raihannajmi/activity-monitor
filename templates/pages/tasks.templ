@@ -31,12 +31,16 @@ templ Tasks(tasks []models.Task, filter string) {
 					<!-- Kanban Board -->
 					<div class="kanban-board">
 						<!-- Todo Column -->
-						<div class="kanban-col">
+						<div class="kanban-col" id="kanban-col-todo">
 							<div class="kanban-col-header">
 								<span class="kanban-col-title">Todo</span>
-								<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusTodo)) }</span>
+								<span class="kanban-col-count" id="col-count-todo">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusTodo)) }</span>
 							</div>
-							<div class="kanban-list" id="col-todo" data-status="todo">
+							<div class="kanban-list" id="col-todo" data-status="todo"
+								hx-trigger="taskCreated from:body"
+								hx-get="/tasks/column/todo"
+								hx-swap="innerHTML"
+							>
 								for _, task := range filterTasks(tasks, models.StatusTodo) {
 									@components.TaskCard(task)
 								}
@@ -44,12 +48,16 @@ templ Tasks(tasks []models.Task, filter string) {
 						</div>
 
 						<!-- In Progress Column -->
-						<div class="kanban-col">
+						<div class="kanban-col" id="kanban-col-in_progress">
 							<div class="kanban-col-header">
 								<span class="kanban-col-title">Sedang Dikerjakan</span>
-								<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusInProgress)) }</span>
+								<span class="kanban-col-count" id="col-count-in_progress">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusInProgress)) }</span>
 							</div>
-							<div class="kanban-list" id="col-in_progress" data-status="in_progress">
+							<div class="kanban-list" id="col-in_progress" data-status="in_progress"
+								hx-trigger="taskCreated from:body"
+								hx-get="/tasks/column/in_progress"
+								hx-swap="innerHTML"
+							>
 								for _, task := range filterTasks(tasks, models.StatusInProgress) {
 									@components.TaskCard(task)
 								}
@@ -57,12 +65,16 @@ templ Tasks(tasks []models.Task, filter string) {
 						</div>
 
 						<!-- Done Column -->
-						<div class="kanban-col">
+						<div class="kanban-col" id="kanban-col-done">
 							<div class="kanban-col-header">
 								<span class="kanban-col-title">Selesai</span>
-								<span class="kanban-col-count">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusDone)) }</span>
+								<span class="kanban-col-count" id="col-count-done">{ fmt.Sprintf("%d", countTasks(tasks, models.StatusDone)) }</span>
 							</div>
-							<div class="kanban-list" id="col-done" data-status="done">
+							<div class="kanban-list" id="col-done" data-status="done"
+								hx-trigger="taskCreated from:body"
+								hx-get="/tasks/column/done"
+								hx-swap="innerHTML"
+							>
 								for _, task := range filterTasks(tasks, models.StatusDone) {
 									@components.TaskCard(task)
 								}
@@ -160,6 +172,13 @@ func filterTasks(tasks []models.Task, status models.Status) []models.Task {
 
 func countTasks(tasks []models.Task, status models.Status) int {
 	return len(filterTasks(tasks, status))
+}
+
+// KanbanColumn renders only the card list inside a column — used for partial HTMX swaps.
+templ KanbanColumn(tasks []models.Task, status models.Status) {
+	for _, task := range filterTasks(tasks, status) {
+		@components.TaskCard(task)
+	}
 }
 
 templ TaskDetail(task models.Task) {

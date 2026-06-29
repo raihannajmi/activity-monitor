@@ -63,7 +63,7 @@ templ Base(title string, page string, user ...string) {
 				
 				<div style="margin-top: auto; display: flex; flex-direction: column; gap: 24px;">
 					<!-- Fokus Hari Ini Sidebar Widget -->
-					<div style="background: white; border: 1px solid var(--color-border); border-radius: 12px; padding: 16px;">
+				<div style="background: white; border: 1px solid var(--color-border); border-radius: 12px; padding: 16px;" id="sidebar-focus-widget">
 						<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 16px; letter-spacing: 0.5px;">Fokus Hari Ini</div>
 						<div style="display: flex; flex-direction: column; gap: 16px;">
 							<div style="display: flex; gap: 12px; align-items: center;">
@@ -146,24 +146,106 @@ templ Base(title string, page string, user ...string) {
 						});
 					});
 				}
-				// Close modal on backdrop click
+
+				// ── Close modal on backdrop click ──────────────────────────────────
 				document.body.addEventListener('click', function(e) {
 					if (e.target.classList.contains('modal-backdrop')) {
 						document.getElementById('modal-container').innerHTML = '';
 					}
 				});
-				// HTMX after request - scroll to top on page swap
-				document.body.addEventListener('htmx:afterSwap', function(e) {
-					if (e.detail.target.id === 'main-content') {
-						window.scrollTo(0, 0);
+
+				// Close modal on Escape key
+				document.addEventListener('keydown', function(e) {
+					if (e.key === 'Escape') {
+						document.getElementById('modal-container').innerHTML = '';
 					}
+				});
+
+				// ── Lucide icons ───────────────────────────────────────────────────
+				document.body.addEventListener('htmx:afterSwap', function(e) {
 					lucide.createIcons();
 				});
-				
-				// Init icons on load
 				document.addEventListener('DOMContentLoaded', () => {
 					lucide.createIcons();
 				});
+
+				// ── HTMX Global Event Bus ──────────────────────────────────────────
+				// taskCreated: close modal, column lists auto-refresh via hx-trigger on col divs
+				document.body.addEventListener('taskCreated', function() {
+					document.getElementById('modal-container').innerHTML = '';
+				});
+
+				// closeModal: generic close
+				document.body.addEventListener('closeModal', function() {
+					document.getElementById('modal-container').innerHTML = '';
+				});
+
+				// taskDeleted: also close modal if open
+				document.body.addEventListener('taskDeleted', function() {
+					document.getElementById('modal-container').innerHTML = '';
+				});
+
+				// statsUpdated: refresh sidebar focus widget without reload
+				document.body.addEventListener('statsUpdated', function() {
+					var widget = document.getElementById('sidebar-focus-widget');
+					if (widget) {
+						htmx.ajax('GET', '/components/sidebar-stats', {
+							target: '#sidebar-focus-widget',
+							swap: 'outerHTML'
+						});
+					}
+				});
+
+				// timerStopped → also trigger statsUpdated
+				document.body.addEventListener('timerStopped', function() {
+					setTimeout(function() {
+						var widget = document.getElementById('sidebar-focus-widget');
+						if (widget) {
+							htmx.ajax('GET', '/components/sidebar-stats', {
+								target: '#sidebar-focus-widget',
+								swap: 'outerHTML'
+							});
+						}
+					}, 500);
+				});
+
+				// taskStatusChanged: refresh relevant column partial
+				document.body.addEventListener('taskStatusChanged', function() {
+					['todo', 'in_progress', 'done'].forEach(function(status) {
+						var col = document.getElementById('col-' + status);
+						if (col) {
+							htmx.ajax('GET', '/tasks/column/' + status, {
+								target: '#col-' + status,
+								swap: 'innerHTML'
+							});
+						}
+					});
+				});
+
+				// ── Mobile: ensure modal is full screen on small viewports ─────────
+				function adjustModalForMobile() {
+					var modals = document.querySelectorAll('.modal');
+					modals.forEach(function(modal) {
+						if (window.innerWidth <= 768) {
+							modal.style.maxWidth = '100%';
+							modal.style.width = '100%';
+							modal.style.maxHeight = '100vh';
+							modal.style.borderRadius = '16px 16px 0 0';
+						} else {
+							modal.style.maxWidth = '';
+							modal.style.width = '';
+							modal.style.maxHeight = '';
+							modal.style.borderRadius = '';
+						}
+					});
+				}
+
+				document.body.addEventListener('htmx:afterSwap', function(e) {
+					if (e.detail.target.id === 'modal-container') {
+						adjustModalForMobile();
+					}
+				});
+				window.addEventListener('resize', adjustModalForMobile);
 			</script>
 		</body>
 	</html>

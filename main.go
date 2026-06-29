@@ -88,6 +88,7 @@ func main() {
 		}
 	})
 	mux.HandleFunc("/tasks/new", taskH.NewForm)
+	mux.HandleFunc("/tasks/column/", taskH.ColumnPartial)
 
 	mux.HandleFunc("/tasks/", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path

@@ -19,3 +19,18 @@ templ ToastError(message string) {
 		<button class="toast-close" onclick="this.parentElement.remove()">✕</button>
 	</div>
 }
+
+templ ToastSuccess(message string) {
+	<div 
+		class="toast toast-success" 
+		id={ fmt.Sprintf("toast-%d", time.Now().UnixNano()) }
+		hx-on:animationend="if(event.animationName==='fadeOut') this.remove()"
+	>
+		<div class="toast-icon">✓</div>
+		<div class="toast-content">
+			<div class="toast-title">Berhasil</div>
+			<div class="toast-message">{ message }</div>
+		</div>
+		<button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+	</div>
+}

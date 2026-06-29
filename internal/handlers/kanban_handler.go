@@ -68,7 +68,6 @@ func (h *KanbanHandler) MoveTask(w http.ResponseWriter, r *http.Request) {
 	task.Position = newPos
 	if columnID != "" {
 		task.ColumnID = &columnID
-		// Sync task status based on column ID
 		if columnID == "todo" {
 			task.Status = models.StatusTodo
 		} else if columnID == "inprogress" || columnID == "in_progress" {
@@ -85,6 +84,8 @@ func (h *KanbanHandler) MoveTask(w http.ResponseWriter, r *http.Request) {
 
 	h.kanban.LogActivity(taskID, "move_task", "", fmt.Sprintf("Moved to column %s at position %f", columnID, newPos))
 
+	// SortableJS already moved the card visually — just persist, no swap needed
+	w.Header().Set("HX-Trigger", `{"taskMoved": true}`)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -109,8 +110,7 @@ func (h *KanbanHandler) AddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Trigger WebSocket/HTMX reload of comments section
-	w.Header().Set("HX-Refresh", "true")
+	w.Header().Set("HX-Trigger", `{"commentAdded": true}`)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -129,7 +129,7 @@ func (h *KanbanHandler) AddChecklist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Refresh", "true")
+	w.Header().Set("HX-Trigger", `{"checklistAdded": true}`)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -150,7 +150,7 @@ func (h *KanbanHandler) AddAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Refresh", "true")
+	w.Header().Set("HX-Trigger", `{"attachmentAdded": true}`)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -186,7 +186,7 @@ func (h *KanbanHandler) ToggleLabel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Refresh", "true")
+	w.Header().Set("HX-Trigger", `{"labelToggled": true}`)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -207,6 +207,6 @@ func (h *KanbanHandler) UpdatePomodoro(w http.ResponseWriter, r *http.Request) {
 	task.CompletedPomodoro = comp
 
 	_ = h.tasks.Update(task)
-	w.Header().Set("HX-Refresh", "true")
+	w.Header().Set("HX-Trigger", `{"pomodoroUpdated": true}`)
 	w.WriteHeader(http.StatusOK)
 }

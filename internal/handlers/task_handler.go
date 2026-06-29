@@ -105,8 +105,12 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Refresh", "true")
+	// Close modal + emit taskCreated (columns will auto-refresh via hx-trigger)
+	w.Header().Set("HX-Trigger", `{"taskCreated": true, "closeModal": true}`)
+	w.Header().Set("HX-Retarget", "#toast-container")
+	w.Header().Set("HX-Reswap", "beforeend")
 	w.WriteHeader(http.StatusOK)
+	components.ToastSuccess("Task berhasil dibuat").Render(r.Context(), w)
 }
 
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -139,8 +143,20 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Refresh", "true")
-	w.WriteHeader(http.StatusOK)
+	// Reload the updated task to get fresh data
+	updated, err := h.tasks.GetWithDetails(id)
+	if err != nil {
+		w.Header().Set("HX-Trigger", `{"taskUpdated": true}`)
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Swap just the specific card in the kanban board
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("HX-Trigger", `{"taskUpdated": true}`)
+	w.Header().Set("HX-Retarget", "#task-"+id)
+	w.Header().Set("HX-Reswap", "outerHTML")
+	components.TaskCard(*updated).Render(r.Context(), w)
 }
 
 func (h *TaskHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
@@ -170,7 +186,11 @@ func (h *TaskHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Swap updated card + emit event for column refresh & stats update
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("HX-Trigger", `{"taskStatusChanged": true, "statsUpdated": true}`)
+	w.Header().Set("HX-Retarget", "#task-"+id)
+	w.Header().Set("HX-Reswap", "outerHTML")
 	components.TaskCard(*task).Render(r.Context(), w)
 }
 
@@ -180,12 +200,11 @@ func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, "Gagal menghapus task", http.StatusInternalServerError)
 		return
 	}
-	
-	// If deleted from Detail Page, redirect back to task list
-	if strings.Contains(r.Header.Get("HX-Current-URL"), "/tasks/"+id) {
-		w.Header().Set("HX-Redirect", "/tasks")
-		return
-	}
+
+	// Remove the card in-place, emit event to update stats
+	w.Header().Set("HX-Trigger", `{"taskDeleted": true}`)
+	w.Header().Set("HX-Retarget", "#task-"+id)
+	w.Header().Set("HX-Reswap", "outerHTML swap:0.3s")
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -332,4 +351,39 @@ func (h *TaskHandler) sendError(w http.ResponseWriter, r *http.Request, msg stri
 	w.Header().Set("HX-Reswap", "beforeend")
 	w.WriteHeader(http.StatusOK)
 	components.ToastError(msg).Render(r.Context(), w)
+}
+
+func (h *TaskHandler) sendSuccess(w http.ResponseWriter, r *http.Request, msg string) {
+	w.Header().Set("HX-Retarget", "#toast-container")
+	w.Header().Set("HX-Reswap", "beforeend")
+	w.WriteHeader(http.StatusOK)
+	components.ToastSuccess(msg).Render(r.Context(), w)
+}
+
+// ColumnPartial renders only the cards inside a kanban column — for HTMX partial swap.
+func (h *TaskHandler) ColumnPartial(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/tasks/column/")
+	statusStr := strings.TrimSuffix(path, "/")
+
+	var status models.Status
+	switch statusStr {
+	case "todo":
+		status = models.StatusTodo
+	case "in_progress":
+		status = models.StatusInProgress
+	case "done":
+		status = models.StatusDone
+	default:
+		http.NotFound(w, r)
+		return
+	}
+
+	taskList, err := h.tasks.ListByStatus(string(status))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	pages.KanbanColumn(taskList, status).Render(r.Context(), w)
 }
