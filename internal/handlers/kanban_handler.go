@@ -71,7 +71,7 @@ func (h *KanbanHandler) MoveTask(w http.ResponseWriter, r *http.Request) {
 		// Sync task status based on column ID
 		if columnID == "todo" {
 			task.Status = models.StatusTodo
-		} else if columnID == "inprogress" {
+		} else if columnID == "inprogress" || columnID == "in_progress" {
 			task.Status = models.StatusInProgress
 		} else if columnID == "done" {
 			task.Status = models.StatusDone
