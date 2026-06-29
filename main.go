@@ -53,13 +53,7 @@ func main() {
 
 	// Handlers
 	dashboardH := handlers.NewDashboardHandler(taskSvc, reminderSvc, activitySvc, timelogSvc)
-	taskH := handlers.NewTaskHandler(taskSvc, reminderSvc)
-	noteH := handlers.NewNoteHandler(noteSvc)
-	timelineH := handlers.NewTimelineHandler(activitySvc)
-	reminderH := handlers.NewReminderHandler(reminderSvc)
-	timerH := handlers.NewTimerHandler(timelogSvc)
-	reportH := handlers.NewReportHandler(timelogSvc)
-	kanbanH := handlers.NewKanbanHandler(kanbanSvc, taskSvc)
+	apiH := handlers.NewAPIHandler(taskSvc, noteSvc, reminderSvc, activitySvc, timelogSvc, kanbanSvc)
 
 	mux := http.NewServeMux()
 
@@ -72,122 +66,111 @@ func main() {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	// Dashboard
-	mux.HandleFunc("/", dashboardH.Show)
+	// API Routing
+	mux.HandleFunc("/api/v1/dashboard", apiH.DashboardStats)
+	mux.HandleFunc("/api/v1/tasks", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			apiH.TaskCreate(w, r)
+		} else {
+			apiH.TaskList(w, r)
+		}
+	})
+	mux.HandleFunc("/api/v1/tasks/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		switch {
+		case strings.HasSuffix(path, "/move"):
+			apiH.TaskMove(w, r)
+		case strings.HasSuffix(path, "/subtasks"):
+			apiH.SubtaskCreate(w, r)
+		case strings.Contains(path, "/subtasks/") && strings.HasSuffix(path, "/toggle"):
+			apiH.SubtaskToggle(w, r)
+		case strings.Contains(path, "/subtasks/"):
+			apiH.SubtaskDelete(w, r)
+		case strings.HasSuffix(path, "/checklists"):
+			apiH.ChecklistCreate(w, r)
+		case strings.Contains(path, "/checklists/") && strings.Contains(path, "/items/"):
+			if r.Method == http.MethodDelete {
+				apiH.ChecklistItemDelete(w, r)
+			} else {
+				apiH.ChecklistItemUpdate(w, r)
+			}
+		case strings.Contains(path, "/checklists/") && strings.HasSuffix(path, "/items"):
+			apiH.ChecklistItemCreate(w, r)
+		case strings.Contains(path, "/checklists/"):
+			apiH.ChecklistDelete(w, r)
+		case strings.HasSuffix(path, "/comments"):
+			apiH.CommentCreate(w, r)
+		case strings.HasSuffix(path, "/attachments"):
+			apiH.AttachmentCreate(w, r)
+		case strings.HasSuffix(path, "/labels"):
+			apiH.LabelToggle(w, r)
+		default:
+			if r.Method == http.MethodDelete {
+				apiH.TaskDelete(w, r)
+			} else if r.Method == http.MethodPut {
+				apiH.TaskUpdate(w, r)
+			} else {
+				apiH.TaskGet(w, r)
+			}
+		}
+	})
+	mux.HandleFunc("/api/v1/labels", apiH.LabelList)
+	mux.HandleFunc("/api/v1/notes", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			apiH.NoteCreate(w, r)
+		} else {
+			apiH.NoteList(w, r)
+		}
+	})
+	mux.HandleFunc("/api/v1/notes/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodDelete {
+			apiH.NoteDelete(w, r)
+		} else {
+			apiH.NoteUpdate(w, r)
+		}
+	})
+	mux.HandleFunc("/api/v1/timeline", apiH.TimelineList)
+	mux.HandleFunc("/api/v1/timer/start", apiH.TimerStart)
+	mux.HandleFunc("/api/v1/timer/active", apiH.TimerActive)
+	mux.HandleFunc("/api/v1/timer/", apiH.TimerStop)
+	mux.HandleFunc("/api/v1/reports", apiH.ReportList)
+	mux.HandleFunc("/api/v1/reminders", apiH.ReminderCreate)
+	mux.HandleFunc("/api/v1/reminders/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/done") {
+			apiH.ReminderDone(w, r)
+		} else {
+			apiH.ReminderDelete(w, r)
+		}
+	})
+
+	// Dashboard / templ legacy views (kept for compatibility during build)
+	mux.HandleFunc("/legacy-dashboard", dashboardH.Show)
 	mux.HandleFunc("/components/sidebar-stats", dashboardH.SidebarStats)
 
-	// Tasks
-	mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			taskH.List(w, r)
-		case http.MethodPost:
-			taskH.Create(w, r)
-		default:
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-	})
-	mux.HandleFunc("/tasks/new", taskH.NewForm)
-	mux.HandleFunc("/tasks/column/", taskH.ColumnPartial)
 
-	mux.HandleFunc("/tasks/", func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
-
-		switch {
-		case strings.HasSuffix(path, "/edit") && r.Method == http.MethodGet:
-			taskH.EditForm(w, r)
-		case strings.HasSuffix(path, "/status") && r.Method == http.MethodPut:
-			taskH.UpdateStatus(w, r)
-		case strings.HasSuffix(path, "/move") && r.Method == http.MethodPut:
-			kanbanH.MoveTask(w, r)
-		case strings.HasSuffix(path, "/comments") && r.Method == http.MethodPost:
-			kanbanH.AddComment(w, r)
-		case strings.HasSuffix(path, "/checklists") && r.Method == http.MethodPost:
-			kanbanH.AddChecklist(w, r)
-		case strings.HasSuffix(path, "/attachments") && r.Method == http.MethodPost:
-			kanbanH.AddAttachment(w, r)
-		case strings.HasSuffix(path, "/labels") && r.Method == http.MethodPost:
-			kanbanH.ToggleLabel(w, r)
-		case strings.HasSuffix(path, "/pomodoro") && r.Method == http.MethodPost:
-			kanbanH.UpdatePomodoro(w, r)
-		case strings.HasSuffix(path, "/subtasks") && r.Method == http.MethodPost:
-			taskH.AddSubtask(w, r)
-		case strings.Contains(path, "/subtasks/") && strings.HasSuffix(path, "/toggle") && r.Method == http.MethodPut:
-			taskH.ToggleSubtask(w, r)
-		case strings.Contains(path, "/subtasks/") && r.Method == http.MethodDelete:
-			taskH.DeleteSubtask(w, r)
-		case strings.HasSuffix(path, "/reminder/new") && r.Method == http.MethodGet:
-			taskH.ReminderForm(w, r)
-		case strings.HasSuffix(path, "/reminders") && r.Method == http.MethodPost:
-			taskH.CreateReminder(w, r)
-		case r.Method == http.MethodPut:
-			taskH.Update(w, r)
-		case r.Method == http.MethodDelete:
-			taskH.Delete(w, r)
-		case r.Method == http.MethodGet:
-			taskH.Detail(w, r)
-		default:
+	// Root handler (serves static/index.html for SPA routes)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// If requesting api, return 404
+		if strings.HasPrefix(r.URL.Path, "/api/") {
 			http.NotFound(w, r)
+			return
 		}
-	})
-
-	// Notes
-	mux.HandleFunc("/notes", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			noteH.List(w, r)
-		case http.MethodPost:
-			noteH.Create(w, r)
-		default:
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-	})
-	mux.HandleFunc("/notes/new", noteH.NewForm)
-	mux.HandleFunc("/notes/search", noteH.Search)
-
-	mux.HandleFunc("/notes/", func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
-		switch {
-		case strings.HasSuffix(path, "/edit") && r.Method == http.MethodGet:
-			noteH.EditForm(w, r)
-		case r.Method == http.MethodPut:
-			noteH.Update(w, r)
-		case r.Method == http.MethodDelete:
-			noteH.Delete(w, r)
-		default:
+		// If requesting static assets, or if path has file extension, it should not serve index.html
+		if strings.HasPrefix(r.URL.Path, "/static/") || strings.Contains(r.URL.Path, ".") {
 			http.NotFound(w, r)
+			return
 		}
-	})
 
-	// Timeline
-	mux.HandleFunc("/timeline", timelineH.Show)
-
-	// Reports
-	mux.HandleFunc("/reports", reportH.Show)
-
-	// Timer
-	mux.HandleFunc("/timer/start", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			timerH.Start(w, r)
+		// Read index.html from staticFiles
+		content, err := staticFiles.ReadFile("static/index.html")
+		if err != nil {
+			// Fallback if index.html doesn't exist yet (during initial dev build)
+			w.Header().Set("Content-Type", "text/html")
+			w.Write([]byte("<h1>Activity Monitor Vue SPA loading... (Please build the frontend)</h1>"))
+			return
 		}
-	})
-	mux.HandleFunc("/timer/", func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, "/stop") && r.Method == http.MethodPost {
-			timerH.Stop(w, r)
-		}
-	})
-
-	// Reminders
-	mux.HandleFunc("/reminders/", func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
-		switch {
-		case strings.HasSuffix(path, "/done") && r.Method == http.MethodPut:
-			reminderH.MarkDone(w, r)
-		case r.Method == http.MethodDelete:
-			reminderH.Delete(w, r)
-		default:
-			http.NotFound(w, r)
-		}
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(content)
 	})
 
 	log.Println("Activity Monitor berjalan di http://localhost:8080")
