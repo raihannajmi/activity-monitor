@@ -24,11 +24,25 @@ type Task struct {
 	Deadline    *time.Time `db:"deadline"`
 	CreatedAt   time.Time  `db:"created_at"`
 	UpdatedAt   time.Time  `db:"updated_at"`
+	ColumnID    *string    `db:"column_id"`
+	Position    float64    `db:"position"`
+	ParentTaskID *string   `db:"parent_task_id"`
+	EstimatePomodoro int   `db:"estimate_pomodoro"`
+	CompletedPomodoro int  `db:"completed_pomodoro"`
+	CoverImage  *string    `db:"cover_image"`
+	CreatedBy   *string    `db:"created_by"`
+	UpdatedBy   *string    `db:"updated_by"`
+	Archived    bool       `db:"archived"`
 
 	// Populated on demand
-	Subtasks       []Subtask  `db:"-"`
-	Reminders      []Reminder `db:"-"`
-	TotalTimeSpent int        `db:"-"` // in seconds
+	Subtasks       []Subtask     `db:"-"`
+	Reminders      []Reminder    `db:"-"`
+	TotalTimeSpent int           `db:"-"` // in seconds
+	Checklists     []Checklist   `db:"-"`
+	Labels         []Label       `db:"-"`
+	Attachments    []Attachment  `db:"-"`
+	Comments       []Comment     `db:"-"`
+	ActivityLogs   []ActivityLog `db:"-"`
 }
 
 func (t *Task) SubtaskProgress() (int, int) {

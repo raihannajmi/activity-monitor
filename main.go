@@ -41,13 +41,15 @@ func main() {
 	noteRepo := repositories.NewNoteRepository(db)
 	activityRepo := repositories.NewActivityRepository(db)
 	timelogRepo := repositories.NewTimeLogRepository(db)
+	kanbanRepo := repositories.NewKanbanRepository(db)
 
 	// Services
-	taskSvc := services.NewTaskService(taskRepo, subtaskRepo, reminderRepo, activityRepo, timelogRepo)
+	taskSvc := services.NewTaskService(taskRepo, subtaskRepo, reminderRepo, activityRepo, timelogRepo, kanbanRepo)
 	noteSvc := services.NewNoteService(noteRepo, activityRepo)
 	reminderSvc := services.NewReminderService(reminderRepo, taskRepo, activityRepo)
 	activitySvc := services.NewActivityService(activityRepo)
 	timelogSvc := services.NewTimeLogService(timelogRepo)
+	kanbanSvc := services.NewKanbanService(kanbanRepo, taskRepo, activityRepo)
 
 	// Handlers
 	dashboardH := handlers.NewDashboardHandler(taskSvc, reminderSvc, activitySvc, timelogSvc)
@@ -57,6 +59,7 @@ func main() {
 	reminderH := handlers.NewReminderHandler(reminderSvc)
 	timerH := handlers.NewTimerHandler(timelogSvc)
 	reportH := handlers.NewReportHandler(timelogSvc)
+	kanbanH := handlers.NewKanbanHandler(kanbanSvc, taskSvc)
 
 	mux := http.NewServeMux()
 
@@ -94,6 +97,18 @@ func main() {
 			taskH.EditForm(w, r)
 		case strings.HasSuffix(path, "/status") && r.Method == http.MethodPut:
 			taskH.UpdateStatus(w, r)
+		case strings.HasSuffix(path, "/move") && r.Method == http.MethodPut:
+			kanbanH.MoveTask(w, r)
+		case strings.HasSuffix(path, "/comments") && r.Method == http.MethodPost:
+			kanbanH.AddComment(w, r)
+		case strings.HasSuffix(path, "/checklists") && r.Method == http.MethodPost:
+			kanbanH.AddChecklist(w, r)
+		case strings.HasSuffix(path, "/attachments") && r.Method == http.MethodPost:
+			kanbanH.AddAttachment(w, r)
+		case strings.HasSuffix(path, "/labels") && r.Method == http.MethodPost:
+			kanbanH.ToggleLabel(w, r)
+		case strings.HasSuffix(path, "/pomodoro") && r.Method == http.MethodPost:
+			kanbanH.UpdatePomodoro(w, r)
 		case strings.HasSuffix(path, "/subtasks") && r.Method == http.MethodPost:
 			taskH.AddSubtask(w, r)
 		case strings.Contains(path, "/subtasks/") && strings.HasSuffix(path, "/toggle") && r.Method == http.MethodPut:

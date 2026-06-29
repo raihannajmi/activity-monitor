@@ -129,7 +129,7 @@ func Tasks(tasks []models.Task, filter string) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></div></div></div></div><script>\n\t\t\t// Initialize SortableJS for each column\n\t\t\tdocument.addEventListener(\"DOMContentLoaded\", function() {\n\t\t\t\tvar columns = document.querySelectorAll('.kanban-list');\n\t\t\t\tcolumns.forEach(function(col) {\n\t\t\t\t\tnew Sortable(col, {\n\t\t\t\t\t\tgroup: 'kanban', // set both lists to same group\n\t\t\t\t\t\tanimation: 150,\n\t\t\t\t\t\tghostClass: 'kanban-ghost',\n\t\t\t\t\t\tonEnd: function (evt) {\n\t\t\t\t\t\t\tvar itemEl = evt.item;  // dragged HTMLElement\n\t\t\t\t\t\t\tvar toList = evt.to;    // target list\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tvar newStatus = toList.getAttribute('data-status');\n\t\t\t\t\t\t\tvar taskId = itemEl.id.replace('task-', '');\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t// Trigger HTMX request to update status\n\t\t\t\t\t\t\thtmx.ajax('PUT', '/tasks/' + taskId + '/status', {\n\t\t\t\t\t\t\t\tvalues: { status: newStatus },\n\t\t\t\t\t\t\t\tswap: 'none' // Don't swap to prevent jumping, let HTMX handle backend state\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t},\n\t\t\t\t\t});\n\t\t\t\t});\n\n\t\t\t\t// Mobile Segmented Control Logic\n\t\t\t\tvar tabs = document.querySelectorAll('.kanban-tab');\n\t\t\t\tvar cols = document.querySelectorAll('.kanban-col');\n\t\t\t\t\n\t\t\t\ttabs.forEach(function(tab) {\n\t\t\t\t\ttab.addEventListener('click', function() {\n\t\t\t\t\t\ttabs.forEach(t => t.classList.remove('active'));\n\t\t\t\t\t\tthis.classList.add('active');\n\t\t\t\t\t\t\n\t\t\t\t\t\tvar targetId = this.getAttribute('data-target');\n\t\t\t\t\t\tcols.forEach(function(col) {\n\t\t\t\t\t\t\tvar list = col.querySelector('.kanban-list');\n\t\t\t\t\t\t\tif (list.id === targetId) {\n\t\t\t\t\t\t\t\tcol.classList.add('mobile-active');\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tcol.classList.remove('mobile-active');\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t\t\n\t\t\t\t// Init first tab\n\t\t\t\tif (cols.length > 0) cols[0].classList.add('mobile-active');\n\t\t\t});\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></div></div></div></div><script>\n\t\t\t// Initialize SortableJS for each column\n\t\t\tdocument.addEventListener(\"DOMContentLoaded\", function() {\n\t\t\t\tvar columns = document.querySelectorAll('.kanban-list');\n\t\t\t\tcolumns.forEach(function(col) {\n\t\t\t\t\tnew Sortable(col, {\n\t\t\t\t\t\tgroup: 'kanban', // set both lists to same group\n\t\t\t\t\t\tanimation: 150,\n\t\t\t\t\t\tghostClass: 'kanban-ghost',\n\t\t\t\t\t\tonEnd: function (evt) {\n\t\t\t\t\t\t\tvar itemEl = evt.item;  // dragged HTMLElement\n\t\t\t\t\t\t\tvar toList = evt.to;    // target list\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tvar newStatus = toList.getAttribute('data-status');\n\t\t\t\t\t\t\tvar taskId = itemEl.id.replace('task-', '');\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tvar prevEl = itemEl.previousElementSibling;\n\t\t\t\t\t\t\tvar nextEl = itemEl.nextElementSibling;\n\t\t\t\t\t\t\tvar prevId = prevEl ? prevEl.id.replace('task-', '') : '';\n\t\t\t\t\t\t\tvar nextId = nextEl ? nextEl.id.replace('task-', '') : '';\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t// Trigger HTMX request to update position (Trello floating position)\n\t\t\t\t\t\t\thtmx.ajax('PUT', '/tasks/' + taskId + '/move', {\n\t\t\t\t\t\t\t\tvalues: {\n\t\t\t\t\t\t\t\t\tcolumn_id: newStatus,\n\t\t\t\t\t\t\t\t\tprev_id: prevId,\n\t\t\t\t\t\t\t\t\tnext_id: nextId\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\tswap: 'none'\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t},\n\t\t\t\t\t});\n\t\t\t\t});\n\n\t\t\t\t// Draggable Columns (Trello-style column drag)\n\t\t\t\tvar board = document.querySelector('.kanban-board');\n\t\t\t\tif (board) {\n\t\t\t\t\tnew Sortable(board, {\n\t\t\t\t\t\tanimation: 150,\n\t\t\t\t\t\thandle: '.kanban-col-header',\n\t\t\t\t\t\tghostClass: 'kanban-ghost',\n\t\t\t\t\t\tonEnd: function (evt) {\n\t\t\t\t\t\t\t// ponytail: Column drag is fully interactive visually\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\t// Mobile Segmented Control Logic\n\t\t\t\tvar tabs = document.querySelectorAll('.kanban-tab');\n\t\t\t\tvar cols = document.querySelectorAll('.kanban-col');\n\t\t\t\t\n\t\t\t\ttabs.forEach(function(tab) {\n\t\t\t\t\ttab.addEventListener('click', function() {\n\t\t\t\t\t\ttabs.forEach(t => t.classList.remove('active'));\n\t\t\t\t\t\tthis.classList.add('active');\n\t\t\t\t\t\t\n\t\t\t\t\t\tvar targetId = this.getAttribute('data-target');\n\t\t\t\t\t\tcols.forEach(function(col) {\n\t\t\t\t\t\t\tvar list = col.querySelector('.kanban-list');\n\t\t\t\t\t\t\tif (list.id === targetId) {\n\t\t\t\t\t\t\t\tcol.classList.add('mobile-active');\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tcol.classList.remove('mobile-active');\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t\t\n\t\t\t\t// Init first tab\n\t\t\t\tif (cols.length > 0) cols[0].classList.add('mobile-active');\n\t\t\t});\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -197,7 +197,7 @@ func TaskDetail(task models.Task) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/edit")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 152, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 174, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -210,7 +210,7 @@ func TaskDetail(task models.Task) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 159, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 181, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -245,7 +245,7 @@ func TaskDetail(task models.Task) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(task.PriorityLabel())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 170, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 192, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -258,7 +258,7 @@ func TaskDetail(task models.Task) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(task.StatusLabel())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 171, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 193, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -276,7 +276,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(task.Deadline.Format("02 Jan 2006"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 173, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 195, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -294,7 +294,7 @@ func TaskDetail(task models.Task) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 177, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 199, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -312,7 +312,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(task.Description)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 180, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 202, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -349,7 +349,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/status")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 194, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 216, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 				if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(`{"status":"in_progress"}`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 195, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 217, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 				if templ_7745c5c3_Err != nil {
@@ -375,7 +375,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 197, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 219, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 				if templ_7745c5c3_Err != nil {
@@ -394,7 +394,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/status")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 204, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 226, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 				if templ_7745c5c3_Err != nil {
@@ -407,7 +407,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(`{"status":"done"}`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 205, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 227, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 				if templ_7745c5c3_Err != nil {
@@ -420,7 +420,7 @@ func TaskDetail(task models.Task) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 207, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 229, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
 				if templ_7745c5c3_Err != nil {
@@ -444,7 +444,7 @@ func TaskDetail(task models.Task) templ.Component {
 				return done_of(done, total)
 			}())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 223, Col: 10}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 245, Col: 10}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -465,7 +465,7 @@ func TaskDetail(task models.Task) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue("/tasks/" + task.ID + "/reminder/new")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 235, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/tasks.templ`, Line: 257, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 			if templ_7745c5c3_Err != nil {

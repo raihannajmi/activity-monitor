@@ -89,14 +89,36 @@ templ Tasks(tasks []models.Task, filter string) {
 							var newStatus = toList.getAttribute('data-status');
 							var taskId = itemEl.id.replace('task-', '');
 							
-							// Trigger HTMX request to update status
-							htmx.ajax('PUT', '/tasks/' + taskId + '/status', {
-								values: { status: newStatus },
-								swap: 'none' // Don't swap to prevent jumping, let HTMX handle backend state
+							var prevEl = itemEl.previousElementSibling;
+							var nextEl = itemEl.nextElementSibling;
+							var prevId = prevEl ? prevEl.id.replace('task-', '') : '';
+							var nextId = nextEl ? nextEl.id.replace('task-', '') : '';
+							
+							// Trigger HTMX request to update position (Trello floating position)
+							htmx.ajax('PUT', '/tasks/' + taskId + '/move', {
+								values: {
+									column_id: newStatus,
+									prev_id: prevId,
+									next_id: nextId
+								},
+								swap: 'none'
 							});
 						},
 					});
 				});
+
+				// Draggable Columns (Trello-style column drag)
+				var board = document.querySelector('.kanban-board');
+				if (board) {
+					new Sortable(board, {
+						animation: 150,
+						handle: '.kanban-col-header',
+						ghostClass: 'kanban-ghost',
+						onEnd: function (evt) {
+							// ponytail: Column drag is fully interactive visually
+						}
+					});
+				}
 
 				// Mobile Segmented Control Logic
 				var tabs = document.querySelectorAll('.kanban-tab');

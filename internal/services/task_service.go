@@ -16,6 +16,7 @@ type TaskService struct {
 	reminders  *repositories.ReminderRepository
 	activities *repositories.ActivityRepository
 	timelogs   *repositories.TimeLogRepository
+	kanban     *repositories.KanbanRepository
 }
 
 func NewTaskService(
@@ -24,8 +25,9 @@ func NewTaskService(
 	reminders *repositories.ReminderRepository,
 	activities *repositories.ActivityRepository,
 	timelogs *repositories.TimeLogRepository,
+	kanban *repositories.KanbanRepository,
 ) *TaskService {
-	return &TaskService{tasks, subtasks, reminders, activities, timelogs}
+	return &TaskService{tasks, subtasks, reminders, activities, timelogs, kanban}
 }
 
 func (s *TaskService) ListByStatus(status string) ([]models.Task, error) {
@@ -59,6 +61,14 @@ func (s *TaskService) ListWithSubtasks() ([]models.Task, error) {
 		}
 		tasks[i].Subtasks = subs
 		tasks[i].TotalTimeSpent, _ = s.timelogs.GetTotalTimeForTask(tasks[i].ID)
+
+		// Populate labels for task cards on board (ponytail: lazy populating)
+		if s.kanban != nil {
+			tasks[i].Labels, _ = s.kanban.GetTaskLabels(tasks[i].ID)
+			tasks[i].Checklists, _ = s.kanban.ListChecklists(tasks[i].ID)
+			tasks[i].Comments, _ = s.kanban.ListComments(tasks[i].ID)
+			tasks[i].Attachments, _ = s.kanban.ListAttachments(tasks[i].ID)
+		}
 	}
 	return tasks, nil
 }
@@ -75,6 +85,15 @@ func (s *TaskService) GetWithDetails(id string) (*models.Task, error) {
 	task.Subtasks = subs
 	task.Reminders, _ = s.reminders.ListByTaskID(id)
 	task.TotalTimeSpent, _ = s.timelogs.GetTotalTimeForTask(id)
+
+	if s.kanban != nil {
+		task.Checklists, _ = s.kanban.ListChecklists(id)
+		task.Labels, _ = s.kanban.GetTaskLabels(id)
+		task.Attachments, _ = s.kanban.ListAttachments(id)
+		task.Comments, _ = s.kanban.ListComments(id)
+		task.ActivityLogs, _ = s.kanban.ListActivityLogs(id)
+	}
+
 	return task, nil
 }
 

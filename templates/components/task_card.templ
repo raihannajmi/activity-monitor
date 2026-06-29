@@ -7,43 +7,102 @@ import (
 )
 
 templ TaskCard(task models.Task) {
-	<div class="card task-card" id={ fmt.Sprintf("task-%s", task.ID) } hx-get={ fmt.Sprintf("/tasks/%s/edit", task.ID) } hx-target="#modal-container" hx-swap="innerHTML">
+	<div class="card task-card" id={ fmt.Sprintf("task-%s", task.ID) } hx-get={ fmt.Sprintf("/tasks/%s/edit", task.ID) } hx-target="#modal-container" hx-swap="innerHTML" style="position: relative;">
 		<div class="task-card-header">
-			<div class="task-card-badges">
+			<div class="task-card-badges" style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;">
 				if task.Priority != "" {
-					<span class="task-badge" style="background: #FFFBEB; color: #D97706;">
+					<span class="task-badge" style="background: #FFFBEB; color: #D97706; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
 						{ strings.ToUpper(string(task.Priority)) }
 					</span>
 				}
-				<span class="task-badge" style="background: #EFF6FF; color: #2563EB;">KANBAN</span>
+				for _, label := range task.Labels {
+					<span class="task-badge" style={ fmt.Sprintf("background: %s15; color: %s; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;", label.Color, label.Color) }>
+						{ strings.ToUpper(label.Name) }
+					</span>
+				}
 			</div>
 		</div>
 
-		<div class="task-card-title">
+		<div class="task-card-title" style="font-weight: 600; font-size: 14px; color: var(--color-text-primary); margin-bottom: 4px;">
 			{ task.Title }
 		</div>
 
-		<div class="task-card-footer" style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px;">
-			<div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary);">
+		if task.Description != "" {
+			<div class="task-card-desc" style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+				{ task.Description }
+			</div>
+		}
+
+		<!-- Pomodoro & Checklist Progress Info -->
+		<div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+			if task.EstimatePomodoro > 0 {
+				<div style="font-size: 11px; color: var(--color-danger); display: flex; align-items: center; gap: 2px;" title="Pomodoro Estimate">
+					<span>🍅</span>
+					<strong>{ fmt.Sprintf("%d", task.CompletedPomodoro) }/{ fmt.Sprintf("%d", task.EstimatePomodoro) }</strong>
+				</div>
+			}
+			
+			if len(task.Checklists) > 0 {
+				{ func() string {
+					// calculate total progress
+					total := 0
+					completed := 0
+					for _, c := range task.Checklists {
+						for _, item := range c.Items {
+							total++
+							if item.Completed {
+								completed++
+							}
+						}
+					}
+					if total > 0 {
+						pct := (completed * 100) / total
+						return fmt.Sprintf("☑ %d%% (%d/%d)", pct, completed, total)
+					}
+					return ""
+				}() }
+			}
+		</div>
+
+		<div class="task-card-footer" style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 6px; border-top: 1px solid #F3F4F6;">
+			<div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary);">
 				if task.Status == "done" {
 					<i data-lucide="check-circle-2" style="width: 14px; height: 14px; color: var(--color-success);"></i>
-					<span style="color: var(--color-success);">Selesai</span>
+					<span style="color: var(--color-success); font-weight: 500;">Selesai</span>
 				} else {
-					<i data-lucide="circle" style="width: 14px; height: 14px; color: var(--color-text-muted);"></i>
-					if task.Deadline != nil {
+					if task.IsOverdue() {
+						<i data-lucide="alert-circle" style="width: 14px; height: 14px; color: var(--color-danger);"></i>
+						<span style="color: var(--color-danger); font-weight: bold;">Overdue</span>
+					} else if task.Deadline != nil {
+						<i data-lucide="calendar" style="width: 13px; height: 13px;"></i>
 						<span>{ task.Deadline.Format("02 Jan") }</span>
 					} else {
-						<span>Belum ada due date</span>
+						<span style="color: var(--color-text-muted);">No due date</span>
 					}
 				}
 			</div>
 			
-			if task.TotalTimeSpent > 0 {
-				<div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--color-text-secondary);">
-					<i data-lucide="clock" style="width: 12px; height: 12px;"></i>
-					{ fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }
-				</div>
-			}
+			<!-- Comments and Attachments Count -->
+			<div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--color-text-muted);">
+				if len(task.Comments) > 0 {
+					<span style="display: flex; align-items: center; gap: 2px;" title="Comments">
+						<i data-lucide="message-square" style="width: 12px; height: 12px;"></i>
+						{ fmt.Sprintf("%d", len(task.Comments)) }
+					</span>
+				}
+				if len(task.Attachments) > 0 {
+					<span style="display: flex; align-items: center; gap: 2px;" title="Attachments">
+						<i data-lucide="paperclip" style="width: 12px; height: 12px;"></i>
+						{ fmt.Sprintf("%d", len(task.Attachments)) }
+					</span>
+				}
+				if task.TotalTimeSpent > 0 {
+					<span style="display: flex; align-items: center; gap: 2px;" title="Time Spent">
+						<i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+						{ fmt.Sprintf("%dm", task.TotalTimeSpent / 60) }
+					</span>
+				}
+			</div>
 		</div>
 	</div>
 }
